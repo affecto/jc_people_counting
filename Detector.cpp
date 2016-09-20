@@ -167,7 +167,7 @@ void Detector::run() {
         people_count_detector->line_det1->AddLine(preprocessed_frame);
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
-        //face_detector->Process(frame, *parameters, frameNo, fileSource);
+        face_detector->Process(frame, *parameters, frameNo, fileSource);
 
         if (parameters->display) {
             imshow(window_name, frame);

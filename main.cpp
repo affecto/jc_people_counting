@@ -91,7 +91,7 @@ int main(int argc, const char *argv[]) {
             ("unitGUID,I", po::value<int>(&parameters->unitGUID)->default_value(-1), "Unique identifierfor this installation")
 
             // for line detector configuration
-            ("blob,b", po::value<int>(&parameters->blob_area_threshold)->default_value(2500), "threshold for people counting")
+            ("blob,b", po::value<int>(&parameters->blob_area_threshold)->default_value(1500), "threshold for people counting")
 
             ("observationCountInterval,c", po::value<int>(&parameters->observationCountInterval)->default_value(60), "Observation count threshold" )
             ("observationDeprecationTime,d", po::value<int>(&parameters->observationDeprecationTime)->default_value(60), "Observation deprecation threshold" )
