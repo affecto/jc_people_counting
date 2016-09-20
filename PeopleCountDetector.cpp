@@ -20,8 +20,12 @@ PeopleCountDetector::PeopleCountDetector(const Parameters& params) {
 
     element = cv::Mat(7,9, CV_8U, kernel_data);
 
-    line_det1 = new LineDetector("det1", 0.1, 0.5, 0.1, 1.0, params.frame_width, params.frame_height, element, params.scale_factor);
-    line_det2 = new LineDetector("det2", 0.9, 0.5, 0.9, 1.0, params.frame_width, params.frame_height, element, params.scale_factor);
+    // params.roi_vlines[0:4]: upper left x, upper left y, bottom right x, bottom right y, e.g. 0.1 0.5 0.9 1.0
+    // then it creates two virtual lines, one connects (0.1, 0.5) and (0.1, 1.0), another connects (0.9, 0.5) and (0.9, 1.0)
+    line_det1 = new LineDetector("det1", params.roi_vlines[0], params.roi_vlines[1], params.roi_vlines[0], params.roi_vlines[3],
+                                 params.frame_width, params.frame_height, element, params.scale_factor, params.blob_area_threshold);
+    line_det2 = new LineDetector("det2", params.roi_vlines[2], params.roi_vlines[1], params.roi_vlines[2], params.roi_vlines[3],
+                                 params.frame_width, params.frame_height, element, params.scale_factor, params.blob_area_threshold);
 
 }
 

@@ -9,14 +9,13 @@
 
 using namespace std;
 
-PreProcessor::PreProcessor(int grayscale, double s_width, double s_height, ROI r, int u_roi) {
+PreProcessor::PreProcessor(int grayscale, double s_width, double s_height, ROI r, bool u_roi) {
 
     scale_width = s_width;
     scale_height = s_height;
     convert_to_grayscale = grayscale;
     use_roi = u_roi;
     roi = new ROI(r.relative_center_x, r.relative_center_y, r.relative_width, r.relative_height, r.frame_width, r.frame_height);
-
 
 }
 
@@ -38,7 +37,7 @@ cv::Mat PreProcessor::Process(const cv::Mat& frame) {
         cv::resize(frame, resized_frame, cv::Size(), scale_width, scale_height, cv::INTER_AREA);
     }
 
-    if (use_roi == 1) {
+    if (use_roi) {
         ROI new_roi(roi->relative_center_x, roi->relative_center_y, roi->relative_width, roi->relative_height, resized_frame);
         cv::getRectSubPix(resized_frame, new_roi.getSize(), new_roi.getCenter(), cropped_frame);
         return cropped_frame;

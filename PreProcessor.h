@@ -17,14 +17,14 @@ private:
 
 public:
     int convert_to_grayscale;
-    int use_roi;
+    bool use_roi;
 
     double scale_width;
     double scale_height;
     ROI* roi;
 
 
-    PreProcessor(int grayscale, double s_width, double s_height, ROI r, int u_roi);
+    PreProcessor(int grayscale, double s_width, double s_height, ROI r, bool u_roi);
     PreProcessor(const Parameters& paras);
 
     cv::Mat Resize();

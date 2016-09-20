@@ -6,6 +6,7 @@
 #define JC_PILOT_DETECTEDPERSON_H
 
 #include <iostream>
+#include <string>
 #include <ctime>
 #include <opencv2/opencv.hpp>
 #include "MovingAvgVal.h"
@@ -27,6 +28,8 @@ class DetectedPerson {
     cv::Point gaze;
     int crowdSightID;
     int attentionSpan = 0;
+    float headYaw;
+    std::string possibilityToSee;
 
 private:
 
@@ -126,6 +129,47 @@ public:
 
     void setGaze(const cv::Point &g) {
         gaze = g;
+    }
+
+    double getHeadYaw() {
+        return headYaw;
+    }
+
+    void setHeadYaw(double yaw) {
+        headYaw  = (yaw * 180.0) / M_PI;
+    }
+
+    std::string getPossibilityToSee() {
+        return possibilityToSee;
+    }
+
+    int categorizeHeadYaw(float degrees) {
+
+        if ( -3.0 <= degrees <= 3.0 ) {
+            return 1;
+        }
+
+        if ( -6.0 <= degrees <= 6.0 ) {
+            return 2;
+        }
+
+        return 3;
+
+    }
+
+    void setPossibilityToSee() {
+
+        int category = categorizeHeadYaw(headYaw);
+
+        if (category == 1) {
+            possibilityToSee = "Very likely";
+        }
+        else if (category == 2) {
+            possibilityToSee = "Likely";
+        }
+        else {
+            possibilityToSee = "Not likely";
+        }
     }
 
     int getDetectionFrameNo() const {

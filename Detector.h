@@ -37,7 +37,7 @@ public:
 
     }
 
-    bool init();
+    void init();
     bool ok();
     void InitPreProcessor();
     void InitOpenCV();
@@ -46,7 +46,6 @@ public:
     void run();
 
     void sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, int countedPedestrians, int frameNo, Parameters *parameters);
-
 
 };
 

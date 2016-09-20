@@ -5,31 +5,16 @@
 #include <iostream>
 #include "FaceDetector.h"
 
-FaceDetector::FaceDetector(string datadir, string license, int dev) {
-/*
-    if (dev == 0) {
-        crowdSight = new  CrowdSight(datadir, REDISTRIBUTION);
-    } else {
-        crowdSight = new CrowdSight(datadir, DEVELOPER);
-    }
-
-    if (!crowdSight->authenticate(license)) {
-        delete crowdSight;
-        crowdSight = NULL;
-    }
-*/
-}
-
 FaceDetector::FaceDetector(Parameters &parameters) {
-/*
+
     if (parameters.dev == 0) {
-        crowdSight = new  CrowdSight(parameters.datadir, REDISTRIBUTION);
+        crowdSight = new CrowdSight(parameters.datadir, REDISTRIBUTION);
     } else {
         crowdSight = new CrowdSight(parameters.datadir, DEVELOPER);
     }
 
     if (!crowdSight->authenticate(parameters.license)) {
-        std::cerr << "Error:: Could not authenticate CrowdSight witj key: " << parameters.license << std::endl;
+        std::cerr << "Error:: Could not authenticate CrowdSight with key: " << parameters.license << std::endl;
         std::cerr << crowdSight->getErrorDescription() << std::endl;
         delete crowdSight;
         crowdSight = NULL;
@@ -38,7 +23,7 @@ FaceDetector::FaceDetector(Parameters &parameters) {
     if (parameters.dev == 1) {
         std::cout << "Detector type: " << crowdSight->getFaceDetector() << std::endl;
     }
-*/
+
 }
 
 void FaceDetector::ShowSettings() {
@@ -57,6 +42,22 @@ void FaceDetector::ShowSettings() {
     cout << "Clothing Color Used: " << crowdSight->isClothingColorsUsed() << endl;
     cout << "Emotion Used: " << crowdSight->isEmotionsUsed() << endl;
 
+}
+
+void FaceDetector::DrawResults(cv::Mat frame, Person &person, int frameno) {
+    cv::Point rightEyePosition = person.getRightEye();
+    cv::Point leftEyePosition = person.getLeftEye();
+
+    cv::circle(frame, rightEyePosition, 3, vcolor::KCOLOR_RED_1);
+    cv::circle(frame, leftEyePosition, 3, vcolor::KCOLOR_RED_1);
+    cv::rectangle(frame, person.getFaceRect(), vcolor::KCOLOR_RED_1);
+    std::string idstring = std::to_string(person.getID());
+    cv::putText( frame, idstring,  cv::Point(person.getFaceRect().x, person.getFaceRect().y)
+            , cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_GREEN_1 );
+    std::string gazeString = std::to_string(person.getHeadGaze().x) + std::to_string(person.getHeadGaze().y);
+    cv::putText( frame, gazeString,  cv::Point(person.getFaceRect().x + 15,person.getFaceRect().y)
+            , cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_GREEN_1 );
+    cv::Point stats_pos = cv::Point(75, 75);
 }
 
 bool FaceDetector::isCloserTo(cv::Point origPoint, cv::Point comparePoint, cv::Point adPoint) {
@@ -80,68 +81,15 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
         return false;
     }
 
-    std::vector<Person> people;
-    crowdSight->getCurrentPeople(people);
-
+    std::vector<Person> persons;
+    crowdSight->getCurrentPeople(persons);
     std::vector<Person>::iterator it;
+    cout << "frame no: " << frameNo << endl;
 
-
-    for (int i = 0; i < people.size(); i++) {
-
-        Person p = people[i];
-        std::map<long, DetectedPerson>::iterator detIt;
-        detIt = detectedPersonMap.find(p.getID());
-        std::cout << detIt->second.getCrowdSightID() << std::endl;
-
-
-        if (detIt != detectedPersonMap.end()) {
-            detIt->second.incrementDetectionCount();
-            detIt->second.addAge(p.getAge());
-            detIt->second.addGender(p.getGender());
-            detIt->second.setLastObserved(frameTimestamp);
-            detIt->second.setLastObservedFrame(frameNo);
-
-            if (this->isCloserTo(detIt->second.getGaze(), p.getHeadGaze(), cv::Point(paras.ad_point_x, paras.ad_point_y)))
-                detIt->second.setGaze(p.getHeadGaze());
-
-            if (detIt->second.getAttentionSpan() < p.getAttentionSpan())
-                detIt->second.setAttentionSpan(p.getAttentionSpan());
-
-            if (!detIt->second.getDetected()) {
-                if (detIt->second.getDetectionCount() >= paras.detectionCount) {
-                    detIt->second.setDetected(true);
-                    detIt->second.setPersonId();
-                    std::cout << "Detected as person " << detIt->second.getPersonId() << "frame " << frameNo << " gaze " << p.getHeadGaze().x << " "
-                              << p.getHeadGaze().y << "(idCounter: " << DetectedPerson::idCounter << ")" << std::endl;
-
-
-                } else if ( frameNo - detIt->second.getDetectionFrameNo() > paras.detectionCount) {
-                    std::cout << "not accepted as person -> removing" << std::endl;
-                    detectedPersonMap.erase(detIt);
-
-                }
-            }
-        } else if (p.getID() != 0) {
-            DetectedPerson newPerson;
-            newPerson.setCrowdSightID(p.getID());
-            newPerson.setDetectionCount(1);
-            newPerson.setDetectionFrameNo(frameNo);
-            newPerson.setLastObserved(frameTimestamp);
-            newPerson.setFirstObservedTimestamp(frameTimestamp);
-            newPerson.setGaze(p.getHeadGaze());
-
-            detectedPersonMap[newPerson.getCrowdSightID()] = newPerson;
-
-            std::cout << "First sight, person " << p.getID() << " frame: " << frameNo << " gaze: " << p.getHeadGaze().x << " " << p.getHeadGaze().y << std::endl;
-        }
-    }
-
-
-}
-/*
-    for (it == people.begin(); it < people.end(); it++) {
+    for (it = persons.begin(); it < persons.end(); it++) {
         std::map<long, DetectedPerson>::iterator detIt;
         detIt = detectedPersonMap.find(it->getID());
+        std::cout << detIt->second.getCrowdSightID() << std::endl;
 
         if (detIt != detectedPersonMap.end()) {
             detIt->second.incrementDetectionCount();
@@ -149,8 +97,10 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
             detIt->second.addGender(it->getGender());
             detIt->second.setLastObserved(frameTimestamp);
             detIt->second.setLastObservedFrame(frameNo);
+            detIt->second.setHeadYaw(it->getHeadYaw());
+            detIt->second.setPossibilityToSee();
 
-            if (this->isCloserTo(detIt->second.getGaze(), it->getHeadGaze(), cv::Point(paras.ad_point_x, paras.ad_point_y)))
+            if (isCloserTo(detIt->second.getGaze(), it->getHeadGaze(), cv::Point(paras.ad_point_x, paras.ad_point_y)))
                 detIt->second.setGaze(it->getHeadGaze());
 
             if (detIt->second.getAttentionSpan() < it->getAttentionSpan())
@@ -160,9 +110,10 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
                 if (detIt->second.getDetectionCount() >= paras.detectionCount) {
                     detIt->second.setDetected(true);
                     detIt->second.setPersonId();
-                    std::cout << "Detected as person " << detIt->second.getPersonId() << "frame " << frameNo << " gaze " << it->getHeadGaze().x << " "
-                              << it->getHeadGaze().y << "(idCounter: " << DetectedPerson::idCounter << ")" << std::endl;
-
+                    std::cout << "Detected as person " << detIt->second.getPersonId() << "frame " << frameNo <<
+                            " gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y << "(idCounter: " <<
+                            DetectedPerson::idCounter << ", possi. to see: " << detIt->second.getPossibilityToSee()
+                            << ")" << std::endl;
 
                 } else if ( frameNo - detIt->second.getDetectionFrameNo() > paras.detectionCount) {
                     std::cout << "not accepted as person -> removing" << std::endl;
@@ -178,12 +129,25 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
             newPerson.setLastObserved(frameTimestamp);
             newPerson.setFirstObservedTimestamp(frameTimestamp);
             newPerson.setGaze(it->getHeadGaze());
+            newPerson.setHeadYaw(it->getHeadYaw());
+            newPerson.setPossibilityToSee();
 
             detectedPersonMap[newPerson.getCrowdSightID()] = newPerson;
 
-            std::cout << "First sight, person " << it->getID() << " frame: " << frameNo << " gaze: " << it->getHeadGaze().x << " " << it->getHeadGaze().y << std::endl;
+            std::cout << "First sight, person " << it->getID() << " frame: " << frameNo << " gaze: " << it->getHeadGaze().x << " "
+            << it->getHeadGaze().y << ", possi. to see: " << newPerson.getPossibilityToSee() << std::endl;
         }
+
+        if (paras.display != 0 && it->getID() != 0) {
+            std::cout << "Observed person " << it->getID() << " frame " << frameNo
+            << " attention " << it->getAttentionSpan() <<" gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y
+            << " position" << it->getRightEye() << " head Yaw "<< it->getHeadYaw() << ", "
+            << "possi. to see: " << detIt->second.getPossibilityToSee()<< std::endl;
+
+            DrawResults(frame, *it, frameNo);
+        }
+
     }
 
 }
-*/
+

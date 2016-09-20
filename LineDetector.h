@@ -22,12 +22,12 @@ public:
     int detected_pedestrians;
     string name;
     double scale_factor;
-    int BLOB_AREA_THRESHOLD = 3000;
+    int blob_area_threshold;
 
     LineDetector(string name, double relative_b_x, double relative_b_y,
     double relative_e_x, double relative_e_y,
     int frame_width, int frame_height,
-    Mat kernel, double scale_factor);
+    Mat kernel, double scale_factor, int blob_area_threshold);
 
     void AddLine(Mat frame);
 

@@ -1,25 +1,30 @@
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <crowdsight.h>
 #include "Parameters.h"
 #include "Detector.h"
 #include "DetectedPerson.h"
+#include "FaceDetector.h"
 
 using namespace std;
-
+using namespace rapidjson;
 namespace po = boost::program_options;
 
 void run(Parameters *params) {
 
     cerr << "Initializing sensor..." << endl;
     Detector detector(params);
-
     detector.init();
 
     if (detector.ok()) {
         detector.run();
     } else {
         cerr << "CameraSensor failed to init." << endl;
+        cerr << "or API used has failed to authenticate." << endl;
     }
+
+    detector.sendJsonData(detector.face_detector->detectedPersonMap,
+                          detector.countedPedestrians, detector.frameNo, detector.parameters);
 }
 
 int DetectedPerson :: idCounter = 0;
@@ -58,26 +63,46 @@ int main(int argc, const char *argv[]) {
 */
     desc.add_options()
             ("help,h", "produce help message")
-            ("filename,f", po::value<string>(&parameters->inputFile)->default_value(""), "File to process")
+
+            // Crowdsight API configuration
+            ("license,L", po::value<string>(&parameters->license), "CrowdSight license key")
+            ("dev,M", po::value<int>(&parameters->dev)->default_value(0), "Specify to run in development mode. Only works on authorized computers.")
+            ("datadir,D", po::value<string>(&parameters->datadir)->default_value("/usr/local/crowdsight/data/"), "CrowdSight data directory")
+
+            ("url,U", po::value<string>(&parameters->url)->default_value("http://localhost:8080/_api/samples"), "output POST URL")
+            ("interval,i", po::value<double>(&parameters->post_interval)->default_value(60), "output POST interval in seconds")
+
+            // video input options
             ("camera,C", po::value<int>(&parameters->inputCamera)->default_value(0), "OpenCV camera id")
+            ("stream,s", po::value<string>(&parameters->inputStream), "RTSP stream URL")
+            ("filename,f", po::value<string>(&parameters->inputFile)->default_value(""), "File to process")
+
+            // video frame configurations
+            (",R", po::value<vector<float>>(&parameters->roi_vlines)->multitoken(), "define area of virtual lines for people counting (in relative coordinates)")
+            ("roi", po::value<bool>(&parameters->use_roi)->default_value(false), "Use ROI of frame")
             ("width,W", po::value<int>(&parameters->frame_width)->default_value(1024), "OpenCV frame width")
             ("height,H", po::value<int>(&parameters->frame_height)->default_value(768), "OpenCV frame height")
-            ("unitGUID,I", po::value<int>(&parameters->unitGUID)->default_value(-1), "Unique identifierfor this installation")
-            ("display,d", po::value<int>(&parameters->display)->default_value(0), "Display frames and info on window")
-            ("roi", po::value<int>(&parameters->use_roi)->default_value(0), "Use ROI of frame")
             ("scale", po::value<double>(&parameters->scale_factor)->default_value(0.5), "Set scaling factor to resize video frames")
             ("framerate", po::value<double>(&parameters->frame_rate)->default_value(25.0), "Frame rate f source")
             ("desired_frame_rate", po::value<double>(&parameters->desired_frame_rate)->default_value(25.0), "Desired frame rate")
-            ("url", po::value<string>(&parameters->url)->default_value("DEBUG"), "URL to send json")
-            ("license", po::value<string>(&parameters->license), "Crowdsight license key")
-            ("dev", po::value<int>(&parameters->dev)->default_value(0), "Development mode on")
-            ("datadir", po::value<string>(&parameters->datadir)->default_value("/usr/local/crowdsight/data"), "CrowdSight data directory")
+            ("display", po::value<int>(&parameters->display)->default_value(0), "Display frames and info on window")
+
+            ("X-Device-ID,X", po::value<string>(&parameters->deviceId), "X-Device-ID header for http" )
+            ("unitGUID,I", po::value<int>(&parameters->unitGUID)->default_value(-1), "Unique identifierfor this installation")
+
+            // for line detector configuration
+            ("blob,b", po::value<int>(&parameters->blob_area_threshold)->default_value(2500), "threshold for people counting")
+
+            ("observationCountInterval,c", po::value<int>(&parameters->observationCountInterval)->default_value(60), "Observation count threshold" )
+            ("observationDeprecationTime,d", po::value<int>(&parameters->observationDeprecationTime)->default_value(60), "Observation deprecation threshold" )
+            ("reactFramesThreshold,t", po::value<int>(&parameters->reactFramesThreshold)->default_value(1), "Number of frames needed for reaction")
+            ("reactObservationDeprecationTime,r", po::value<int>(&parameters->reactObservationDeprecationTime)->default_value(5), "Time a single observation is remembered.")
+
             ("startsecond", po::value<int>(&parameters->startSecond)->default_value(0), "Clip's start second")
             ("adX", po::value<int>(&parameters->ad_point_x)->default_value(0), "Gaze middlepoint x val")
             ("adY", po::value<int>(&parameters->ad_point_y)->default_value(0), "Gaze middlepoint y val")
             ("detection_count", po::value<int>(&parameters->detectionCount)->default_value(1), "No of frames needed for person observation")
             ;
-
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -86,6 +111,16 @@ int main(int argc, const char *argv[]) {
         cout << desc << endl;
         return 1;
     }
+
+    cerr << " Unit GUID: " << parameters->unitGUID << endl;
+    cerr << " Mode: " << parameters->dev << endl;
+    cerr << " Postback Url: " << parameters->url << endl;
+    cerr << " Post interval: " << parameters->post_interval << endl;
+    cerr << " License: " << parameters->license << endl;
+    cerr << " Camera #: " << parameters->inputCamera << endl;
+    cerr << " Reaction sample threshold: " << parameters->reactFramesThreshold << endl;
+    cerr << " Reaction sample deprecation: " << parameters->reactObservationDeprecationTime << endl;
+    cerr << " Startsecond " << parameters->startSecond << endl;
 
     run(parameters);
 

@@ -43,6 +43,9 @@ std::string DetectedPerson::asJSON(int frameID, int unitID) {
     writer.String("attentionSpan");
     writer.Int64(attentionSpan);
 
+    writer.String("possibilityToSee");
+    writer.String(possibilityToSee.c_str());
+
     writer.EndObject();
 
     return s.GetString();
