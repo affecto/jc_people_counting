@@ -65,7 +65,8 @@ void LineDetector::DoDetection() {
     for (int i = 0; i < lines.size(); ++i)
         slit_mat.row(i) = Mat(lines[i]).t();
 
-    imshow("ori", slit_mat.t());
+    if (DEBUG_MODE)
+        imshow("ori", slit_mat.t());
 
     Mat gray_slit_mat;
     cvtColor(slit_mat, gray_slit_mat, COLOR_BGR2GRAY);
@@ -91,6 +92,7 @@ void LineDetector::DoDetection() {
         imshow("abs_grad", abs_grad_y.t());
 
     Mat thresh_y;
+
     int threshold_value = 75;
     int max_BINARY_Value = 255;
     int threshold_type = 0;
@@ -178,6 +180,16 @@ void LineDetector::DoDetection() {
         imshow("contour", dst.t());
         waitKey(0);
     }
+
+    slit_mat.release();
+    gray_slit_mat.release();
+    grad_y.release();
+    abs_grad_y.release();
+    thresh_y.release();
+    dilation_dst.release();
+    erosion_dst.release();
+    dst.release();
+
     cout << "Number of detected pedestrians: " << counter << endl;
     detected_pedestrians = counter;
 }
