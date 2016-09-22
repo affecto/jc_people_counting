@@ -84,7 +84,6 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
     std::vector<Person> persons;
     crowdSight->getCurrentPeople(persons);
     std::vector<Person>::iterator it;
-    cout << "frame no: " << frameNo << endl;
 
     for (it = persons.begin(); it < persons.end(); it++) {
         std::map<long, DetectedPerson>::iterator detIt;
