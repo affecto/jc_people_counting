@@ -37,32 +37,27 @@ parser.add_argument('--transfercsv', type=str, help='the transferred files regis
 parser.add_argument('--backupdir', type=str,
                     help='if you want to move the processed MP4 files instead of deleting them')
 
-#parser.add_argument("--detector", required=True)
-#parser.add_argument("--license", required=True)
-#parser.add_argument("--url", required=True)
+parser.add_argument("--detector", required=True)
+parser.add_argument("--license", required=True)
+parser.add_argument("--url", required=True)
 parser.add_argument("--id", required=True)
 
 parser.add_argument("--scale", type=float, help='Set scaling factor to resize video frames')
 parser.add_argument("--blob", type=int, help='threshold for people counting')
-parser.add_argument("-R", type=float, required=True, nargs='+',
+parser.add_argument("-R", required=True, nargs='+',
                     help='specify the roi regions for placing virtual lines, e.g. if you \
                         want roi to be the area defined by the upper left point (0.1, 0.1) \
                         and bottom right point (0.9, 1.0), you should type something like "-R 0.1 0.1 0.9 1.0" ')
 
 args = parser.parse_args()
-if len(args.R) != 4:
-    print 'error: argument -r requires exactly 4 inputs, e.g. 0.1 0.65 0.9 1.0'
-    print 'you have entered', len(args.R), 'inputs as', args.R
-    exit()
-
 logging.basicConfig(filename='receive_files.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
-
 def read_sent_csv(name):
     ret = {}
     try:
         with open(name, 'rb') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
+                print row
                 ret[row[0]] = row[1]
     except IOError:
         return ret
@@ -101,8 +96,10 @@ try:
 
                 t1 = datetime.datetime.now()
                 logging.info('Starting detector...')
+                print args.detector
+                print args.transferdir + k1
                 p = Popen([args.detector, '--license', args.license, '--url', args.url, '-I', args.id, '--dev', '1',
-                           '--filename', args.transferdir + k1, '--startsecond', str(stamp.timestamp)])
+                           '--filename', args.transferdir + k1, '--startsecond', str(stamp.timestamp), '-R', args.R[0], args.R[1], args.R[2], args.R[3]])
                 p.wait()
                 t2 = datetime.datetime.now()
 
