@@ -135,7 +135,7 @@ public:
         return headYaw;
     }
 
-    void setHeadYaw(double yaw) {
+    void setHeadYaw(float yaw) {
         headYaw  = (yaw * 180.0) / M_PI;
     }
 
@@ -145,11 +145,11 @@ public:
 
     int categorizeHeadYaw(float degrees) {
 
-        if ( -3.0 <= degrees <= 3.0 ) {
+        if ( -3.0 <= degrees && degrees <= 3.0 ) {
             return 1;
         }
 
-        if ( -6.0 <= degrees <= 6.0 ) {
+        if ( -6.0 <= degrees && degrees <= 6.0 ) {
             return 2;
         }
 
@@ -158,7 +158,6 @@ public:
     }
 
     void setPossibilityToSee() {
-
         int category = categorizeHeadYaw(headYaw);
 
         if (category == 1) {

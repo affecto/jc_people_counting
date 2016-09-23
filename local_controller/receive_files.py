@@ -48,9 +48,14 @@ parser.add_argument("-R", required=True, nargs='+',
                     help='specify the roi regions for placing virtual lines, e.g. if you \
                         want roi to be the area defined by the upper left point (0.1, 0.1) \
                         and bottom right point (0.9, 1.0), you should type something like "-R 0.1 0.1 0.9 1.0" ')
+parser.add_argument("--roi", required=True, nargs='+',
+                    help='specify the roi regions for face detector, e.g. if you \
+                        want roi to be the area defined by the upper left point (0.1, 0.1) \
+                        and bottom right point (0.9, 1.0), you should type something like --roi 0.1 0.1 0.9 1.0" ')
 
 args = parser.parse_args()
 logging.basicConfig(filename='receive_files.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
+
 def read_sent_csv(name):
     ret = {}
     try:
@@ -99,7 +104,9 @@ try:
                 print args.detector
                 print args.transferdir + k1
                 p = Popen([args.detector, '--license', args.license, '--url', args.url, '-I', args.id, '--dev', '1',
-                           '--filename', args.transferdir + k1, '--startsecond', str(stamp.timestamp), '-R', args.R[0], args.R[1], args.R[2], args.R[3]])
+                           '--filename', args.transferdir + k1, '--startsecond', str(stamp.timestamp),
+                           '--roi', args.roi[0], args.roi[1], args.roi[2], args.roi[3],
+                           '-R', args.R[0], args.R[1], args.R[2], args.R[3]])
                 p.wait()
                 t2 = datetime.datetime.now()
 
