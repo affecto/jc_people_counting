@@ -140,7 +140,7 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
         if (paras.display != 0 && it->getID() != 0) {
             std::cout << "Observed person " << it->getID() << " frame " << frameNo
             << " attention " << it->getAttentionSpan() <<" gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y
-            << " position" << it->getRightEye() << " head Yaw "<< it->getHeadYaw() << ", "
+            << " position" << it->getRightEye() << " head Yaw (degree) "<< detIt->second.getHeadYaw() << ", "
             << "possi. to see: " << detIt->second.getPossibilityToSee()<< std::endl;
 
             DrawResults(frame, *it, frameNo);

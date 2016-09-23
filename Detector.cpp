@@ -136,11 +136,42 @@ bool Detector::ok() {
     return status;
 }
 
+void Detector::display(cv::Mat &frame, Parameters *parameters) {
+    int fontFace = FONT_HERSHEY_PLAIN;
+    double fontScale = 1;
+    int thickness = 2;
+    cv::Size s = frame.size();
+    if (parameters->roi_vlines.size() > 0) {
+        Point pt1(int(parameters->roi_vlines[0] * s.width + 0.5), int(parameters->roi_vlines[1] * s.height + 0.5));
+        Point pt2(int(parameters->roi_vlines[0] * s.width + 0.5), int(parameters->roi_vlines[3] * s.height + 0.5));
+        Point pt3(int(parameters->roi_vlines[2] * s.width + 0.5), int(parameters->roi_vlines[1] * s.height + 0.5));
+        Point pt4(int(parameters->roi_vlines[2] * s.width + 0.5), int(parameters->roi_vlines[3] * s.height + 0.5));
+        cv::line(frame, pt1, pt2, vcolor::KCOLOR_GREEN_1, 4);
+        cv::line(frame, pt3, pt4, vcolor::KCOLOR_GREEN_1, 4);
+        cv::putText(frame, "green: line guards for people counting", pt1, fontFace, fontScale,
+                    Scalar::all(255), thickness, 8);
+    }
+    if (parameters->roi.size() > 0) {
+        Rect roi = Rect(int(parameters->roi[0] * s.width + 0.5), int(parameters->roi[1] * s.height + 0.5),
+                        int((parameters->roi[2] - parameters->roi[0]) * s.width + 0.5),
+                        int((parameters->roi[3] - parameters->roi[1]) * s.height + 0.5));
+        cv::rectangle(frame, roi, vcolor::KCOLOR_BLACK_1, 4);
+        cv::putText(frame, "black: ROI for detecting face",
+                    Point(int(parameters->roi[0] * s.width + 0.5),
+                          int(parameters->roi[1] * s.height + 0.5)),
+                    fontFace, fontScale,
+                    Scalar::all(255), thickness, 8);
+    }
+    imshow(window_name, frame);
+    waitKey(1);
+}
+
 void Detector::run() {
 
     time_t analysisStartTime = time(0);
 
     cv::Mat frame;
+    cv::Mat frame_roi;
 
     timeval start;
     gettimeofday(&start, NULL);
@@ -150,7 +181,6 @@ void Detector::run() {
     int count = 0;
     while(true) {
         videoCapture >> frame;
-
         frameNo++;
 
         if (frame.empty()) {
@@ -162,20 +192,28 @@ void Detector::run() {
             continue;
         }
 
+        if (parameters->roi.size() > 0) {
+            //Rect(x, y, w, h);
+            cv::Size s = frame.size();
+            Rect roi = Rect(int(parameters->roi[0] * s.width + 0.5), int(parameters->roi[1] * s.height + 0.5),
+                            int((parameters->roi[2] - parameters->roi[0]) * s.width + 0.5),
+                            int((parameters->roi[3] - parameters->roi[1]) * s.height + 0.5));
+            frame_roi = frame(roi);
+        }
+
         preprocessed_frame = preprocessor->Process(frame);
 
         people_count_detector->line_det1->AddLine(preprocessed_frame);
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
-        face_detector->Process(frame, *parameters, frameNo, fileSource);
+        // Julius, define ROI in this function, and draw ROI frame in the original frame.
+        face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
         if (parameters->display) {
-            imshow(window_name, frame);
-            waitKey(1);
+            display(frame, parameters);
         }
         count++;
     }
-    cout << count << endl;
     people_count_detector->line_det1->DoDetection();
     people_count_detector->line_det2->DoDetection();
 

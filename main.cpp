@@ -27,6 +27,38 @@ void run(Parameters *params) {
                           detector.countedPedestrians, detector.frameNo, detector.parameters);
 }
 
+bool parameter_check(Parameters *params) {
+
+    cerr << " Unit GUID: " << params->unitGUID << endl;
+    cerr << " Mode: " << params->dev << endl;
+    cerr << " Postback Url: " << params->url << endl;
+    cerr << " Post interval: " << params->post_interval << endl;
+    cerr << " License: " << params->license << endl;
+    cerr << " Camera #: " << params->inputCamera << endl;
+    cerr << " Reaction sample threshold: " << params->reactFramesThreshold << endl;
+    cerr << " Reaction sample deprecation: " << params->reactObservationDeprecationTime << endl;
+    cerr << " Startsecond " << params->startSecond << endl;
+
+    if (params->roi.size() > 0 && params->roi.size() != 4) {
+        cerr << "error: --roi requires exactly four parameters for defining roi region, e.g. 0.1 0.1 0.9 0.9" << "" << endl;
+        return 0;
+    }
+    if (params->roi[2] <= params->roi[0] || params->roi[3] <= params->roi[1]) {
+        cerr << "error: roi[2] and roi[3] cannot be lower than roi[0] and roi[1], respectively.";
+        return 0;
+    }
+
+    if (params->roi_vlines.size() > 0 && params->roi_vlines.size() != 4) {
+        cerr << "error: -R requires exactly four parameters for defining roi region, e.g. 0.1 0.1 0.9 0.9" << "" << endl;
+        return 0;
+    }
+    if (params->roi_vlines[2] <= params->roi_vlines[0] || params->roi_vlines[3] <= params->roi_vlines[1]) {
+        cerr << "error: roi_vlines[2] and roi_vlines[3] cannot be lower than roi_vlines[0] and roi_vlines[1], respectively.";
+        return 0;
+    }
+    return 1;
+}
+
 int DetectedPerson :: idCounter = 0;
 
 int main(int argc, const char *argv[]) {
@@ -79,7 +111,8 @@ int main(int argc, const char *argv[]) {
 
             // video frame configurations
             (",R", po::value<vector<float>>(&parameters->roi_vlines)->multitoken(), "define area of virtual lines for people counting (in relative coordinates)")
-            ("roi", po::value<bool>(&parameters->use_roi)->default_value(false), "Use ROI of frame")
+            //("roi", po::value<bool>(&parameters->use_roi)->default_value(false), "Use ROI of frame")
+            ("roi", po::value<vector<float>>(&parameters->roi)->multitoken(), "Use ROI of frame")
             ("width,W", po::value<int>(&parameters->frame_width)->default_value(1024), "OpenCV frame width")
             ("height,H", po::value<int>(&parameters->frame_height)->default_value(768), "OpenCV frame height")
             ("scale", po::value<double>(&parameters->scale_factor)->default_value(0.5), "Set scaling factor to resize video frames")
@@ -112,15 +145,8 @@ int main(int argc, const char *argv[]) {
         return 1;
     }
 
-    cerr << " Unit GUID: " << parameters->unitGUID << endl;
-    cerr << " Mode: " << parameters->dev << endl;
-    cerr << " Postback Url: " << parameters->url << endl;
-    cerr << " Post interval: " << parameters->post_interval << endl;
-    cerr << " License: " << parameters->license << endl;
-    cerr << " Camera #: " << parameters->inputCamera << endl;
-    cerr << " Reaction sample threshold: " << parameters->reactFramesThreshold << endl;
-    cerr << " Reaction sample deprecation: " << parameters->reactObservationDeprecationTime << endl;
-    cerr << " Startsecond " << parameters->startSecond << endl;
+    if(!parameter_check(parameters))
+        return 0;
 
     run(parameters);
 

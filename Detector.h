@@ -44,6 +44,7 @@ public:
     void InitDetectors();
 
     void run();
+    void display(cv::Mat &frame, Parameters *parameters);
 
     void sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, int countedPedestrians, int frameNo, Parameters *parameters);
 

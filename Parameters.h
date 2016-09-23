@@ -34,7 +34,8 @@ public:
     double scale_factor;
     int use_grayscale;
 
-    bool use_roi;
+    //bool use_roi;
+    vector<float> roi;
     double roi_center_x;
     double roi_center_y;
     double roi_width;

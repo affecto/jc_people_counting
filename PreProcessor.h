@@ -17,11 +17,11 @@ private:
 
 public:
     int convert_to_grayscale;
-    bool use_roi;
+    //bool use_roi;
 
     double scale_width;
     double scale_height;
-    ROI* roi;
+    //ROI* roi;
 
 
     PreProcessor(int grayscale, double s_width, double s_height, ROI r, bool u_roi);
