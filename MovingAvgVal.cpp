@@ -39,7 +39,10 @@ void MovingAvgVal::calcValue() {
         sum += valueArr[i];
     }
 
-    value = sum / endVal;
+    if (endVal != 0)
+        value = sum / endVal;
+    else
+        value = 0.0f;
 }
 
 float MovingAvgVal::getValue() {

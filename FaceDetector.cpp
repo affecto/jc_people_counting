@@ -45,6 +45,13 @@ void FaceDetector::ShowSettings() {
 }
 
 void FaceDetector::DrawResults(cv::Mat frame, Person &person, int frameno) {
+    std::map<long, DetectedPerson>::iterator detIt;
+    detIt = detectedPersonMap.find(person.getID());
+    std::string yaw = "yaw: ";
+    std::string poss = "psb. to see: ";
+    std::string yaw_degree = yaw + std::to_string(detIt->second.getHeadYaw());
+    std::string possibility_to_see = poss + detIt->second.getPossibilityToSee();
+
     cv::Point rightEyePosition = person.getRightEye();
     cv::Point leftEyePosition = person.getLeftEye();
 
@@ -55,9 +62,14 @@ void FaceDetector::DrawResults(cv::Mat frame, Person &person, int frameno) {
     cv::putText( frame, idstring,  cv::Point(person.getFaceRect().x, person.getFaceRect().y)
             , cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_GREEN_1 );
     std::string gazeString = std::to_string(person.getHeadGaze().x) + std::to_string(person.getHeadGaze().y);
-    cv::putText( frame, gazeString,  cv::Point(person.getFaceRect().x + 15,person.getFaceRect().y)
+    cv::putText(frame, gazeString,  cv::Point(person.getFaceRect().x + 15, person.getFaceRect().y)
             , cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_GREEN_1 );
-    cv::Point stats_pos = cv::Point(75, 75);
+
+    cv::putText(frame, possibility_to_see, cv::Point(person.getFaceRect().x, person.getFaceRect().y - 15),
+                                                     cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_BLACK_1 );
+    cv::putText(frame, yaw_degree, cv::Point(person.getFaceRect().x, person.getFaceRect().y - 25),
+                                                     cv::FONT_HERSHEY_PLAIN, 1, vcolor::KCOLOR_BLACK_1 );
+
 }
 
 bool FaceDetector::isCloserTo(cv::Point origPoint, cv::Point comparePoint, cv::Point adPoint) {
@@ -88,7 +100,9 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
     for (it = persons.begin(); it < persons.end(); it++) {
         std::map<long, DetectedPerson>::iterator detIt;
         detIt = detectedPersonMap.find(it->getID());
-        std::cout << detIt->second.getCrowdSightID() << std::endl;
+
+        if (paras.display != 0)
+            DrawResults(frame, *it, frameNo);
 
         if (detIt != detectedPersonMap.end()) {
             detIt->second.incrementDetectionCount();
@@ -109,17 +123,23 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
                 if (detIt->second.getDetectionCount() >= paras.detectionCount) {
                     detIt->second.setDetected(true);
                     detIt->second.setPersonId();
-                    std::cout << "Detected as person " << detIt->second.getPersonId() << "frame " << frameNo <<
+                    /*std::cout << "Detected as person " << detIt->second.getPersonId() << "frame " << frameNo <<
                             " gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y << "(idCounter: " <<
                             DetectedPerson::idCounter << ", possi. to see: " << detIt->second.getPossibilityToSee()
                             << ")" << std::endl;
+                    */
 
                 } else if ( frameNo - detIt->second.getDetectionFrameNo() > paras.detectionCount) {
-                    std::cout << "not accepted as person -> removing" << std::endl;
+                    //std::cout << "not accepted as person -> removing" << std::endl;
                     detectedPersonMap.erase(detIt);
-
                 }
             }
+
+            std::cout << "Observed person " << it->getID() << " frame " << frameNo
+            << " attention " << it->getAttentionSpan() <<" gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y
+            << " position" << it->getRightEye() << " head Yaw (degree) "<< detIt->second.getHeadYaw() << ", "
+            << "possi. to see: " << detIt->second.getPossibilityToSee()<< std::endl;
+
         } else if (it->getID() != 0) {
             DetectedPerson newPerson;
             newPerson.setCrowdSightID(it->getID());
@@ -135,15 +155,6 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
 
             std::cout << "First sight, person " << it->getID() << " frame: " << frameNo << " gaze: " << it->getHeadGaze().x << " "
             << it->getHeadGaze().y << ", possi. to see: " << newPerson.getPossibilityToSee() << std::endl;
-        }
-
-        if (paras.display != 0 && it->getID() != 0) {
-            std::cout << "Observed person " << it->getID() << " frame " << frameNo
-            << " attention " << it->getAttentionSpan() <<" gaze " << it->getHeadGaze().x << " " << it->getHeadGaze().y
-            << " position" << it->getRightEye() << " head Yaw (degree) "<< detIt->second.getHeadYaw() << ", "
-            << "possi. to see: " << detIt->second.getPossibilityToSee()<< std::endl;
-
-            DrawResults(frame, *it, frameNo);
         }
 
     }
