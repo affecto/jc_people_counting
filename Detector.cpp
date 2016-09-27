@@ -278,12 +278,20 @@ void Detector::run() {
     people_count_detector->line_det2->DoDetection();
 
     countedPedestrians = int((people_count_detector->line_det1->detected_pedestrians + people_count_detector->line_det2->detected_pedestrians + 0.5) / 2.0);
-
     cout << "Number of pedestrians: " << countedPedestrians << endl;
 
+    std::map<long, DetectedPerson>::iterator pIt;
+    pIt = face_detector->detectedPersonMap.begin();
+    while (pIt != face_detector->detectedPersonMap.end()) {
+        DetectedPerson &person = pIt->second;
+        if (!person.getDetected())
+            continue;
+        person.average_yaw_byCategory();
+        person.setReportedPossibilityToSee();
+        pIt++;
+    }
+
     time_t endTime = time(0);
-
     std::cout << "Frame rate " << frameNo / (endTime - analysisStartTime) << " frame count " << frameNo << std::endl;
-
 }
 

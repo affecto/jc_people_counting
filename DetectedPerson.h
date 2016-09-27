@@ -34,6 +34,12 @@ class DetectedPerson {
 private:
 
     int personId;
+    int pts_verylikely = 0;
+    int pts_likely = 0;
+    int pts_notlikely = 0;
+    float yaw_verylikely = 0.0f;
+    float yaw_likely = 0.0f;
+    float yaw_notlikely = 0.0f;
 
 public:
 
@@ -159,6 +165,7 @@ public:
 
     void setPossibilityToSee() {
         int category = categorizeHeadYaw(headYaw);
+        increment_pts_and_yaw(category);
 
         if (category == 1) {
             possibilityToSee = "Very likely";
@@ -171,8 +178,52 @@ public:
         }
     }
 
+    // needed for making up dummy person
     void setPossibilityToSee(std::string possibilityToSee_) {
         possibilityToSee = possibilityToSee_;
+    }
+
+    void setReportedPossibilityToSee() {
+        if (pts_verylikely > 0) {
+            setPossibilityToSee("Very likely");
+            setReportedheadYaw(yaw_verylikely);
+        }
+        else if (pts_likely > 0) {
+            setPossibilityToSee("Likely");
+            setReportedheadYaw(yaw_likely);
+        }
+        else {
+            setPossibilityToSee("Not likely");
+            setReportedheadYaw(yaw_notlikely);
+        }
+    }
+
+    void setReportedheadYaw(float average_headYaw_byCategory) {
+        headYaw = average_headYaw_byCategory;
+    }
+
+    void increment_pts_and_yaw(int category) {
+        if (category == 1) {
+            pts_verylikely += 1;
+            yaw_verylikely += headYaw;
+        }
+        else if (category == 2) {
+            pts_likely += 1;
+            yaw_likely += headYaw;
+        }
+        else {
+            pts_notlikely += 1;
+            yaw_notlikely += headYaw;
+        }
+    }
+
+    void average_yaw_byCategory() {
+        if (pts_verylikely != 0)
+            yaw_verylikely /= pts_verylikely;
+        if (pts_likely != 0)
+            yaw_likely /= pts_likely;
+        if (pts_notlikely != 0)
+            yaw_notlikely /= pts_notlikely;
     }
 
     int getDetectionFrameNo() const {
