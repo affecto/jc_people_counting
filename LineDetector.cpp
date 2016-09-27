@@ -121,14 +121,17 @@ void LineDetector::DoDetection() {
     if (DEBUG_MODE)
         imshow("contour", erosion_dst.t());
 
-    Mat dst = (Mat)(Mat::zeros(erosion_dst.rows, erosion_dst.cols, CV_8U));
+    Mat dst;
 
-    int idx = 0;
-    Scalar color(128);
+    if (DEBUG_MODE) {
+        dst = (Mat)(Mat::zeros(erosion_dst.rows, erosion_dst.cols, CV_8U));
 
-    for ( ; idx >= 0; idx = hierarchy[idx][0]) {
-        //drawContours(dst, contours, idx, color, CV_FILLED, 8, hierarchy);
-        drawContours(dst, contours, -1, color, CV_FILLED);
+        int idx = 0;
+        Scalar color(128);
+
+        for ( ; idx >= 0; idx = hierarchy[idx][0]) {
+            drawContours(dst, contours, idx, color, CV_FILLED, 8, hierarchy);
+        }
     }
 
     /*
@@ -139,7 +142,6 @@ void LineDetector::DoDetection() {
     imwrite(ss.str(), dst);
     */
 
-    idx = 0;
     if (DEBUG_MODE) {
         cout << "Number of contours: " << contours.size() << endl;
         cout << "scale factor: " << scale_factor << endl;
@@ -180,15 +182,6 @@ void LineDetector::DoDetection() {
         imshow("contour", dst.t());
         waitKey(0);
     }
-
-    slit_mat.release();
-    gray_slit_mat.release();
-    grad_y.release();
-    abs_grad_y.release();
-    thresh_y.release();
-    dilation_dst.release();
-    erosion_dst.release();
-    dst.release();
 
     cout << "Number of detected pedestrians: " << counter << endl;
     detected_pedestrians = counter;

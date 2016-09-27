@@ -171,6 +171,10 @@ public:
         }
     }
 
+    void setPossibilityToSee(std::string possibilityToSee_) {
+        possibilityToSee = possibilityToSee_;
+    }
+
     int getDetectionFrameNo() const {
         return detectionFrameNo;
     }
@@ -195,7 +199,7 @@ public:
         return lastObservedFrame;
     }
 
-    std::string asJSON(int frameID, int unitID);
+    std::string asJSON(int frameID, int unitID, int countedPedestrians);
 
 
 };

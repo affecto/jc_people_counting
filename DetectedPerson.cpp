@@ -6,7 +6,7 @@
 
 using namespace rapidjson;
 
-std::string DetectedPerson::asJSON(int frameID, int unitID) {
+std::string DetectedPerson::asJSON(int frameID, int unitID, int countedPedestrians) {
 
     StringBuffer s;
     Writer<StringBuffer> writer(s);
@@ -45,6 +45,12 @@ std::string DetectedPerson::asJSON(int frameID, int unitID) {
 
     writer.String("possibilityToSee");
     writer.String(possibilityToSee.c_str());
+
+    writer.String("headYaw");
+    writer.Double(headYaw);
+
+    writer.String("number_of_total_pedestrians");
+    writer.Int64(countedPedestrians);
 
     writer.EndObject();
 

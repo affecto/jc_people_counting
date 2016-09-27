@@ -7,40 +7,99 @@
 #include "include/rapidjson/document.h"
 #include <restclient-cpp/restclient.h>
 
+DetectedPerson* createDummyProfile() {
+
+    DetectedPerson *newPerson = new DetectedPerson();
+    newPerson->setCrowdSightID(-1);
+    newPerson->setDetectionCount(0);
+    newPerson->setDetectionFrameNo(-1);
+    newPerson->setLastObserved(-1);
+    newPerson->setFirstObservedTimestamp(-1);
+    newPerson->setGaze(cv::Point(0,0));
+    newPerson->setHeadYaw(0);
+    newPerson->setPossibilityToSee("Not likely");
+    newPerson->setAttentionSpan(0);
+
+    return newPerson;
+}
+
 void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, int countedPedestrians, int frameNo, Parameters *parameters) {
+
+    cout << "preparing json string to be sent" << endl;
 
     RestClient::headermap headers;
 
     std::map<long, DetectedPerson>::iterator pIt;
     pIt = detectedPeopleMap.begin();
     int count = 0;
+    while (pIt != detectedPeopleMap.end()) {
+        if (pIt->second.getDetected())
+            count++;
+        pIt++;
+    }
+
+    vector<int> countedPedestrians_segs;
+    if (count > 0) {
+        for (int i = 0; i < count; i++)
+            countedPedestrians_segs.push_back(0);
+
+        if (countedPedestrians > count) {
+            int seg_length = int(countedPedestrians / count);
+            int i = 0;
+            while (i < count) {
+                if (i == count - 1)
+                    countedPedestrians_segs[i] = countedPedestrians - seg_length * i;
+                else
+                    countedPedestrians_segs[i] = seg_length;
+                i++;
+            }
+        }
+        else {
+            int countedPedestrians_left = countedPedestrians;
+            int i = 0;
+            while (countedPedestrians_left > 0) {
+                countedPedestrians_segs[i] = 1;
+                countedPedestrians_left--;
+                i++;
+            }
+        }
+    }
 
     std::stringstream jsonStr;
 
     jsonStr << "[";
     jsonStr << "{";
-    jsonStr << "'number_of_total_pedestrians'";
+    jsonStr << """number_of_total_pedestrians""";
     jsonStr << ":";
     jsonStr << countedPedestrians;
     jsonStr << "}";
     jsonStr << " , ";
 
+    count = 0;
+    pIt = detectedPeopleMap.begin();
     while (pIt != detectedPeopleMap.end()) {
         if (pIt->second.getDetected()) {
             if (count > 0) {
                 jsonStr << " , ";
             }
-            count++;
-            jsonStr << pIt->second.asJSON(frameNo, parameters->unitGUID);
+            jsonStr << pIt->second.asJSON(frameNo, parameters->unitGUID, countedPedestrians_segs[count]);
             pIt->second.setSent(true);
+            count++;
+
         }
 
         pIt++;
     }
 
+    if (count == 0) {
+        DetectedPerson *dummyPerson = createDummyProfile();
+        jsonStr << dummyPerson->asJSON(0, -1, countedPedestrians);
+    }
+
     jsonStr << "]";
 
     std::string str = jsonStr.str();
+    cout << "json string to be sent prepared: " << str << endl;
 
     if (str.length() > 0) {
         if (parameters->url.compare("DEBUG") == 0) {
@@ -163,6 +222,10 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
                     Scalar::all(255), thickness, 8);
     }
     imshow(window_name, frame);
+    /*static int count = 0;
+    std::string filename = std::to_string(count) + ".png";
+    cv::imwrite(filename, frame);
+    count++;*/
     waitKey(1);
 }
 
@@ -178,7 +241,6 @@ void Detector::run() {
 
     cerr << "Started detections on unit: " << parameters->unitGUID << endl;
 
-    int count = 0;
     while(true) {
         videoCapture >> frame;
         frameNo++;
@@ -206,13 +268,11 @@ void Detector::run() {
         people_count_detector->line_det1->AddLine(preprocessed_frame);
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
-        // Julius, define ROI in this function, and draw ROI frame in the original frame.
         face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
         if (parameters->display) {
             display(frame, parameters);
         }
-        count++;
     }
     people_count_detector->line_det1->DoDetection();
     people_count_detector->line_det2->DoDetection();
@@ -220,8 +280,6 @@ void Detector::run() {
     countedPedestrians = int((people_count_detector->line_det1->detected_pedestrians + people_count_detector->line_det2->detected_pedestrians + 0.5) / 2.0);
 
     cout << "Number of pedestrians: " << countedPedestrians << endl;
-
-    //sendJsonData(face_detector->detectedPersonMap, countedPedestrians, frameNo, parameters);
 
     time_t endTime = time(0);
 
