@@ -10,11 +10,12 @@
 DetectedPerson* createDummyProfile() {
 
     DetectedPerson *newPerson = new DetectedPerson();
+    time_t now = time(NULL);
     newPerson->setCrowdSightID(-1);
     newPerson->setDetectionCount(0);
     newPerson->setDetectionFrameNo(-1);
-    newPerson->setLastObserved(-1);
-    newPerson->setFirstObservedTimestamp(-1);
+    newPerson->setLastObserved(now);
+    newPerson->setFirstObservedTimestamp(now);
     newPerson->setGaze(cv::Point(0,0));
     newPerson->setHeadYaw(0);
     newPerson->setPossibilityToSee("Not likely");
@@ -68,12 +69,12 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
     std::stringstream jsonStr;
 
     jsonStr << "[";
-    jsonStr << "{";
-    jsonStr << """number_of_total_pedestrians""";
-    jsonStr << ":";
-    jsonStr << countedPedestrians;
-    jsonStr << "}";
-    jsonStr << " , ";
+    //jsonStr << "{";
+    //jsonStr << """number_of_total_pedestrians""";
+    //jsonStr << ":";
+    //jsonStr << countedPedestrians;
+    //jsonStr << "}";
+    //jsonStr << " , ";
 
     count = 0;
     pIt = detectedPeopleMap.begin();
@@ -93,7 +94,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
 
     if (count == 0) {
         DetectedPerson *dummyPerson = createDummyProfile();
-        jsonStr << dummyPerson->asJSON(0, -1, countedPedestrians);
+        jsonStr << dummyPerson->asJSON(frameNo, parameters->unitGUID, countedPedestrians);
     }
 
     jsonStr << "]";
