@@ -68,12 +68,6 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
     std::stringstream jsonStr;
 
     jsonStr << "[";
-    jsonStr << "{";
-    jsonStr << """number_of_total_pedestrians""";
-    jsonStr << ":";
-    jsonStr << countedPedestrians;
-    jsonStr << "}";
-    jsonStr << " , ";
 
     count = 0;
     pIt = detectedPeopleMap.begin();
@@ -85,7 +79,6 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
             jsonStr << pIt->second.asJSON(frameNo, parameters->unitGUID, countedPedestrians_segs[count]);
             pIt->second.setSent(true);
             count++;
-
         }
 
         pIt++;
