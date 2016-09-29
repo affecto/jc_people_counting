@@ -183,7 +183,7 @@ void LineDetector::DoDetection() {
         waitKey(0);
     }
 
-    cout << "Number of detected pedestrians: " << counter << endl;
+    //cout << "Number of detected pedestrians: " << counter << endl;
     detected_pedestrians = counter;
 }
 
