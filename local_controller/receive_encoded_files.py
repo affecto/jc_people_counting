@@ -29,7 +29,7 @@ parser.add_argument('--url', required=True)
 parser.add_argument('--id', required=True)
 parser.add_argument('--scale', type=float, help='Setscaling factor to resize video frames')
 parser.add_argument('--blob', type=int, help='threshold for people counting')
-parser.add_argument('-R', type=float, required=True, nargs='+', help='specify the roi regions for placing virtual lines, '
+parser.add_argument('-R', required=True, nargs='+', help='specify the roi regions for placing virtual lines, '
                                                                      'e.g. if you want roi to be the area defined by the '
                                                                      'upper left point (0.1, 0.1) and bottom right point (0.9 1.0), '
                                                                      'you should type something like "-R 0.1 0.1 0.9 1.0"')
