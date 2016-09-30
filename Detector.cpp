@@ -284,8 +284,10 @@ void Detector::run() {
     pIt = face_detector->detectedPersonMap.begin();
     while (pIt != face_detector->detectedPersonMap.end()) {
         DetectedPerson &person = pIt->second;
-        if (!person.getDetected())
+        if (!person.getDetected()) {
+	    pIt++;
             continue;
+	}
         person.average_yaw_byCategory();
         person.setReportedPossibilityToSee();
         pIt++;
