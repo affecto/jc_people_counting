@@ -18,7 +18,7 @@ public:
     LineDetector* line_det2;
 
 
-    PeopleCountDetector(const Parameters& params);
+    PeopleCountDetector(Parameters& params);
     ~PeopleCountDetector();
 
 };

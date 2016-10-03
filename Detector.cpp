@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include "include/rapidjson/document.h"
 #include <restclient-cpp/restclient.h>
+extern el::Logger* mainLogger;
 
 DetectedPerson* createDummyProfile() {
 
@@ -26,7 +27,7 @@ DetectedPerson* createDummyProfile() {
 
 void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, int countedPedestrians, int frameNo, Parameters *parameters) {
 
-    cout << "preparing json string to be sent" << endl;
+    mainLogger->info("preparing json string to be sent");
 
     RestClient::headermap headers;
 
@@ -69,13 +70,6 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
     std::stringstream jsonStr;
 
     jsonStr << "[";
-    //jsonStr << "{";
-    //jsonStr << """number_of_total_pedestrians""";
-    //jsonStr << ":";
-    //jsonStr << countedPedestrians;
-    //jsonStr << "}";
-    //jsonStr << " , ";
-
     count = 0;
     pIt = detectedPeopleMap.begin();
     while (pIt != detectedPeopleMap.end()) {
@@ -83,7 +77,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
             if (count > 0) {
                 jsonStr << " , ";
             }
-            jsonStr << pIt->second.asJSON(frameNo, parameters->unitGUID, countedPedestrians_segs[count]);
+            jsonStr << pIt->second.asJSON(frameNo, parameters->getunitGUID(), countedPedestrians_segs[count]);
             pIt->second.setSent(true);
             count++;
         }
@@ -93,24 +87,23 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
 
     if (count == 0) {
         DetectedPerson *dummyPerson = createDummyProfile();
-        jsonStr << dummyPerson->asJSON(frameNo, parameters->unitGUID, countedPedestrians);
+        jsonStr << dummyPerson->asJSON(frameNo, parameters->getunitGUID(), countedPedestrians);
     }
 
     jsonStr << "]";
 
     std::string str = jsonStr.str();
-    cout << "json string to be sent prepared: " << str << endl;
-
+    mainLogger->info("json string to be sent prepared:");
     if (str.length() > 0) {
-        if (parameters->url.compare("DEBUG") == 0) {
-            std::cout <<"DEBUG: " << str << std::endl;
+        if (parameters->geturl().compare("DEBUG") == 0) {
+            mainLogger->debug(str.c_str());
         } else {
-            RestClient::response r = RestClient::post(parameters->url, "application/json", str, headers);
+            RestClient::response r = RestClient::post(parameters->geturl(), "application/json", str, headers);
             if (r.code != 200) {
-                std::cerr << "POST failed, code " << r.code << std::endl;
-                cout << "Failed to send" << str << std::endl;
+                mainLogger->error("POST failed, code %v", r.code);
+                mainLogger->error("Failed to send");
             } else {
-                cout << "Sent: " << str << std::endl;
+                mainLogger->info("Sent: %v", str.c_str());
             }
         }
     }
@@ -119,37 +112,37 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
 void Detector::InitOpenCV() {
 
     fileSource = false;
-    if (!parameters->inputFile.empty()) {
-        cout << "Clip from file: " << parameters->inputFile << endl;
+    if (!parameters->getinputFile().empty()) {
+        mainLogger->info("Clip from file: %v", parameters->getinputFile());
         fileSource = true;
-        videoCapture.open(parameters->inputFile);
+        videoCapture.open(parameters->getinputFile());
         if (!videoCapture.isOpened()) {
-            cout << "Couldn't open " << parameters->inputFile << endl;
+            mainLogger->error("Couldn't open %v", parameters->getinputFile());
         }
 
-    } else if (!parameters->inputStream.empty()) {
-        videoCapture.open(parameters->inputStream);
+    } else if (!parameters->getinputStream().empty()) {
+        videoCapture.open(parameters->getinputStream());
         if (!videoCapture.isOpened()) {
-            cout << "Couldn't read streaming at " << parameters->inputStream << endl;
+            mainLogger->error("Couldn't read streaming at %v", parameters->getinputStream());
         }
 
     } else {
-        videoCapture.open(parameters->inputCamera);
+        videoCapture.open(parameters->getinputCamera());
         if (!videoCapture.isOpened()) {
-            cout << "Couldn't read the camera...!" << endl;
+            mainLogger->error("Couldn't read the camera...!", parameters->getinputStream());
         }
-        videoCapture.set(CV_CAP_PROP_FRAME_WIDTH, parameters->frame_width);
-        videoCapture.set(CV_CAP_PROP_FRAME_HEIGHT, parameters->frame_height);
-        videoCapture.set(CV_CAP_PROP_FPS, parameters->frame_rate);
+        videoCapture.set(CV_CAP_PROP_FRAME_WIDTH, parameters->getframe_width());
+        videoCapture.set(CV_CAP_PROP_FRAME_HEIGHT, parameters->getframe_height());
+        videoCapture.set(CV_CAP_PROP_FPS, parameters->getframe_rate());
     }
 
     window_name = "JC Video";
 
-    if (parameters->display != 0) {
+    if (parameters->getis_display() != 0) {
         cvNamedWindow(window_name, cv::WINDOW_AUTOSIZE);
     }
 
-    skip_frames = int(parameters->frame_rate / parameters->desired_frame_rate);
+    skip_frames = int(parameters->getframe_rate() / parameters->getdesired_frame_rate());
 
 }
 
@@ -163,7 +156,7 @@ void Detector::InitDetectors() {
     people_count_detector = new PeopleCountDetector(*parameters);
     face_detector = new FaceDetector(*parameters);
 
-    if (parameters->dev == 1) {
+    if (parameters->getLicenseMode()) {
         face_detector->ShowSettings();
     }
 
@@ -177,8 +170,8 @@ void Detector::init() {
 
     status = true;
 
-    if (parameters->unitGUID == -1) {
-        cerr << "Error:: unitGUID not set" << endl;
+    if (parameters->getunitGUID() == -1) {
+        mainLogger->error("unitGUID not set! unitGUID = %v", parameters->getunitGUID());
         status = false;
         return;
     }
@@ -200,24 +193,26 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
     double fontScale = 1;
     int thickness = 2;
     cv::Size s = frame.size();
-    if (parameters->roi_vlines.size() > 0) {
-        Point pt1(int(parameters->roi_vlines[0] * s.width + 0.5), int(parameters->roi_vlines[1] * s.height + 0.5));
-        Point pt2(int(parameters->roi_vlines[0] * s.width + 0.5), int(parameters->roi_vlines[3] * s.height + 0.5));
-        Point pt3(int(parameters->roi_vlines[2] * s.width + 0.5), int(parameters->roi_vlines[1] * s.height + 0.5));
-        Point pt4(int(parameters->roi_vlines[2] * s.width + 0.5), int(parameters->roi_vlines[3] * s.height + 0.5));
+    const vector<float> roi_fd = parameters->getroi();
+    const vector<float> roi_vlines = parameters->getroi_vlines();
+    if (roi_vlines.size() > 0) {
+        Point pt1(int(roi_vlines[0] * s.width + 0.5), int(roi_vlines[1] * s.height + 0.5));
+        Point pt2(int(roi_vlines[0] * s.width + 0.5), int(roi_vlines[3] * s.height + 0.5));
+        Point pt3(int(roi_vlines[2] * s.width + 0.5), int(roi_vlines[1] * s.height + 0.5));
+        Point pt4(int(roi_vlines[2] * s.width + 0.5), int(roi_vlines[3] * s.height + 0.5));
         cv::line(frame, pt1, pt2, vcolor::KCOLOR_GREEN_1, 4);
         cv::line(frame, pt3, pt4, vcolor::KCOLOR_GREEN_1, 4);
         cv::putText(frame, "green: line guards for people counting", pt1, fontFace, fontScale,
                     Scalar::all(255), thickness, 8);
     }
-    if (parameters->roi.size() > 0) {
-        Rect roi = Rect(int(parameters->roi[0] * s.width + 0.5), int(parameters->roi[1] * s.height + 0.5),
-                        int((parameters->roi[2] - parameters->roi[0]) * s.width + 0.5),
-                        int((parameters->roi[3] - parameters->roi[1]) * s.height + 0.5));
+    if (roi_fd.size() > 0) {
+        Rect roi = Rect(int(roi_fd[0] * s.width + 0.5), int(roi_fd[1] * s.height + 0.5),
+                        int((roi_fd[2] - roi_fd[0]) * s.width + 0.5),
+                        int((roi_fd[3] - roi_fd[1]) * s.height + 0.5));
         cv::rectangle(frame, roi, vcolor::KCOLOR_BLACK_1, 4);
         cv::putText(frame, "black: ROI for detecting face",
-                    Point(int(parameters->roi[0] * s.width + 0.5),
-                          int(parameters->roi[1] * s.height + 0.5)),
+                    Point(int(roi_fd[0] * s.width + 0.5),
+                          int(roi_fd[1] * s.height + 0.5)),
                     fontFace, fontScale,
                     Scalar::all(255), thickness, 8);
     }
@@ -239,12 +234,13 @@ void Detector::run() {
     timeval start;
     gettimeofday(&start, NULL);
 
-    cerr << "Started detections on unit: " << parameters->unitGUID << endl;
+    mainLogger->debug("Started detections on unit: %v", parameters->getunitGUID());
 
     while(true) {
         videoCapture >> frame;
         frameNo++;
-
+        if (frameNo < 710)
+            continue;
         if (frame.empty()) {
             videoCapture.release();
             break;
@@ -253,13 +249,13 @@ void Detector::run() {
         if ((frameNo % skip_frames) != 0) {
             continue;
         }
-
-        if (parameters->roi.size() > 0) {
+        const vector<float> roi_fd = parameters->getroi();
+        if (roi_fd.size() > 0) {
             //Rect(x, y, w, h);
             cv::Size s = frame.size();
-            Rect roi = Rect(int(parameters->roi[0] * s.width + 0.5), int(parameters->roi[1] * s.height + 0.5),
-                            int((parameters->roi[2] - parameters->roi[0]) * s.width + 0.5),
-                            int((parameters->roi[3] - parameters->roi[1]) * s.height + 0.5));
+            Rect roi = Rect(int(roi_fd[0] * s.width + 0.5), int(roi_fd[1] * s.height + 0.5),
+                            int((roi_fd[2] - roi_fd[0]) * s.width + 0.5),
+                            int((roi_fd[3] - roi_fd[1]) * s.height + 0.5));
             frame_roi = frame(roi);
         }
 
@@ -270,7 +266,7 @@ void Detector::run() {
 
         face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
-        if (parameters->display) {
+        if (parameters->getis_display()) {
             display(frame, parameters);
         }
     }
@@ -278,20 +274,23 @@ void Detector::run() {
     people_count_detector->line_det2->DoDetection();
 
     countedPedestrians = int((people_count_detector->line_det1->detected_pedestrians + people_count_detector->line_det2->detected_pedestrians + 0.5) / 2.0);
-    cout << "Number of pedestrians: " << countedPedestrians << endl;
+    mainLogger->info("Number of pedestrians: %v", countedPedestrians);
 
     std::map<long, DetectedPerson>::iterator pIt;
     pIt = face_detector->detectedPersonMap.begin();
     while (pIt != face_detector->detectedPersonMap.end()) {
         DetectedPerson &person = pIt->second;
-        if (!person.getDetected())
+        if (!person.getDetected()) {
+            pIt++;
             continue;
+        }
+
         person.average_yaw_byCategory();
         person.setReportedPossibilityToSee();
         pIt++;
     }
 
     time_t endTime = time(0);
-    std::cout << "Frame rate " << frameNo / (endTime - analysisStartTime) << " frame count " << frameNo << std::endl;
+    mainLogger->debug("frame rate at frame [%v]: %v", frameNo, frameNo / (endTime - analysisStartTime));
 }
 
