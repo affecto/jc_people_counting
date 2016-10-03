@@ -42,7 +42,7 @@ public:
     void InitPreProcessor();
     void InitOpenCV();
     void InitDetectors();
-
+    void fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi);
     void run();
     void display(cv::Mat &frame, Parameters *parameters);
 

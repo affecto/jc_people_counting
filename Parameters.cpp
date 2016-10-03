@@ -55,17 +55,44 @@ Parameters::Parameters(const char* filename, std::string deviceID) {
 
     if (configuration.HasMember("roi")) {
         const Value& roi_fd = configuration["roi"];
-        assert(roi_fd.IsArray() && roi_fd.Size() == 4);
+        assert(roi_fd.IsArray());
         roi.clear();
         for (SizeType i = 0; i < roi_fd.Size(); i++)
             roi.push_back(float(roi_fd[i].GetDouble()));
     }
     if (configuration.HasMember("roi_vlines")) {
         const Value& roi_vl = configuration["roi_vlines"];
-        assert(roi_vl.IsArray() && roi_vl.Size() == 4);
+        assert(roi_vl.IsArray());
         roi_vlines.clear();
         for (SizeType i = 0; i < roi_vl.Size(); i++)
             roi_vlines.push_back(float(roi_vl[i].GetDouble()));
+    }
+    if (configuration.HasMember("dontcare_rois")) {
+        const Value& rois = configuration["dontcare_rois"];
+        //assert(rois.IsArray());
+        for (std::vector<float> roi_vec : dontcare_rois)
+            roi_vec.clear();
+        if (rois[0].IsArray()) {
+            // rois is 2d array
+            for (SizeType i = 0; i < rois.Size(); i++) {
+                // iterate over vectors
+                std::vector<float> temp;
+                for (SizeType j = 0; j < rois[i].Size(); j++) {
+                    temp.push_back(float(rois[i][j].GetDouble()));
+                }
+                dontcare_rois.push_back(temp);
+            }
+        } else {
+            // rois is 1d vector
+            std::vector<float> temp;
+            for (SizeType i = 0; i < rois.Size(); i++) {
+                temp.push_back(float(rois[i].GetDouble()));
+            }
+            dontcare_rois.push_back(temp);
+        }
+
+        //for (SizeType i = 0; i < rois.Size(); i++)
+          //  roi_vlines.push_back(float(roi_vl[i].GetDouble()));
     }
 
     if (configuration.HasMember("startSecond")) startSecond = configuration["startSecond"].GetInt();

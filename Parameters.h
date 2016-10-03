@@ -56,6 +56,7 @@ private:
     // which means the two virtual lines will be located
     // at 1. [0.1, 0.5] to [0.1, 1.0] and at 2. [0.9, 0.5] to [0.9, 1.0]
     std::vector<float> roi_vlines{0.1f, 0.5f, 0.9f, 1.0f};
+    std::vector<std::vector<float>> dontcare_rois;
 
     int startSecond = 0;
 
@@ -147,6 +148,7 @@ public:
     int getis_debug_image() { return is_debug_image; }
     vector<float> getroi() { return roi; }
     vector<float> getroi_vlines() { return roi_vlines; }
+    vector<vector<float>> getdontcare_rois() { return dontcare_rois; }
     double getscale_factor() { return scale_factor; }
     bool getuse_grayscale() { return use_grayscale; }
     int getblob_area_threshold() { return blob_area_threshold; }

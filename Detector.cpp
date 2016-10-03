@@ -224,6 +224,43 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
     waitKey(1);
 }
 
+void Detector::fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi) {
+    const vector<float> roi_fd = parameters->getroi();
+    if (roi_fd.size() > 0) {
+        // Rect(x, y, w, h);
+        cv::Size s = frame.size();
+        Rect roi = Rect(int(roi_fd[0] * s.width + 0.5), int(roi_fd[1] * s.height + 0.5),
+                        int((roi_fd[2] - roi_fd[0]) * s.width + 0.5),
+                        int((roi_fd[3] - roi_fd[1]) * s.height + 0.5));
+        frame_roi = frame(roi);
+    } else {
+        frame.copyTo(frame_roi);
+    }
+    const vector<vector<float>> dontcare_rois = parameters->getdontcare_rois();
+    if (dontcare_rois.size() > 0) {
+        uint8_t *roi_pixels = frame_roi.data;
+
+        int width = frame_roi.cols;
+        int height = frame_roi.rows;
+        for (vector<float> a_roi : dontcare_rois) {
+            int upper_left_x = int( a_roi[0] * width + 0.5 );
+            int upper_left_y = int( a_roi[1] * height + 0.5 );
+            int bottom_right_x = int( a_roi[2] * width + 0.5 );
+            int bottom_right_y = int( a_roi[3] * height + 0.5 );
+
+            for (int i = upper_left_x; i < bottom_right_x; i++) {
+                for (int j = upper_left_y; j < bottom_right_y; j++) {
+                    cv::Vec3b& pixels = frame_roi.at<Vec3b>(j, i);
+                    pixels[0] = 128;
+                    pixels[1] = 128;
+                    pixels[2] = 128;
+                }
+            }
+
+        }
+    }
+}
+
 void Detector::run() {
 
     time_t analysisStartTime = time(0);
@@ -239,8 +276,8 @@ void Detector::run() {
     while(true) {
         videoCapture >> frame;
         frameNo++;
-        if (frameNo < 710)
-            continue;
+        //if (frameNo < 710)
+          //  continue;
         if (frame.empty()) {
             videoCapture.release();
             break;
@@ -249,21 +286,13 @@ void Detector::run() {
         if ((frameNo % skip_frames) != 0) {
             continue;
         }
-        const vector<float> roi_fd = parameters->getroi();
-        if (roi_fd.size() > 0) {
-            //Rect(x, y, w, h);
-            cv::Size s = frame.size();
-            Rect roi = Rect(int(roi_fd[0] * s.width + 0.5), int(roi_fd[1] * s.height + 0.5),
-                            int((roi_fd[2] - roi_fd[0]) * s.width + 0.5),
-                            int((roi_fd[3] - roi_fd[1]) * s.height + 0.5));
-            frame_roi = frame(roi);
-        }
-
         preprocessed_frame = preprocessor->Process(frame);
-
         people_count_detector->line_det1->AddLine(preprocessed_frame);
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
+        const vector<float> roi_fd = parameters->getroi();
+
+        fd_roi_operators(frame, frame_roi);
         face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
         if (parameters->getis_display()) {
