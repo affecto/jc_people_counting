@@ -40,7 +40,7 @@ void run(Parameters *params) {
 bool parameter_check(Parameters *params) {
 
     if (params->getroi().size() > 0 && params->getroi().size() != 4) {
-        mainLogger->error("error: --roi requires exactly four parameters for defining roi region, e.g. 0.1 0.1 0.9 0.9");
+        mainLogger->error("error: ""roi"" requires exactly four parameters for defining roi region, e.g. [0.1 0.1 0.9 0.9]");
         return false;
     }
     if (params->getroi()[2] <= params->getroi()[0] || params->getroi()[3] <= params->getroi()[1]) {
@@ -49,14 +49,22 @@ bool parameter_check(Parameters *params) {
     }
 
     if (params->getroi_vlines().size() > 0 && params->getroi_vlines().size() != 4) {
-        mainLogger->error("error: -R requires exactly four parameters for defining roi region, e.g. 0.1 0.1 0.9 0.9");
+        mainLogger->error("error: ""roi_vlines"" requires exactly four parameters for defining roi region, e.g. [0.1 0.1 0.9 0.9]");
         return false;
     }
     if (params->getroi_vlines()[2] <= params->getroi_vlines()[0] || params->getroi_vlines()[3] <= params->getroi_vlines()[1]) {
         mainLogger->error("error: roi_vlines[2] and roi_vlines[3] cannot be lower than roi_vlines[0] and roi_vlines[1], respectively.");
         return false;
     }
-
+    std::vector<std::vector<float>> dontcare_rois = params->getdontcare_rois();
+    for (std::vector<float> roi : dontcare_rois) {
+        if (roi.size() != 4) {
+            mainLogger->error("error: ""dontcare_rois"" requires exactly four parameters for defining a roi region, "
+                                      "e.g. [0.1 0.1 0.15 0.15]. Input of multiple vectors to define more than one"
+                                      "roi regions is allowed, e.g. [[0.1, 0.1, 0.15, 0.15],[0.6, 0.6, 0.7, 0.7]]");
+            return false;
+        }
+    }
     return true;
 }
 
