@@ -16,6 +16,11 @@ using namespace rapidjson;
 namespace po = boost::program_options;
 el::Logger* mainLogger;
 
+/* parameters for cam2-20160921080253.mp4
+ *"roi" : [0.05, 0.15, 0.9, 0.85],
+  "roi_vlines" : [0.1, 0.2, 0.7, 1.0],
+  "dontcare_rois" : [[0.58, 0.0, 0.75, 0.15], [0.65, 0.15, 0.75, 0.35], [0.74, 0.4, 0.78, 0.5]]
+ */
 /*example of scripts if you are using parsing them with boost library
  * -f /home/amin/ClionProjects/jc_people_counting/videos/cam2-20160921080253.mp4 --display 0 --blob 1500 -M 1 -L f187f8d8b27f424fbab9064c18a7e0e4 -I 1 --roi 0.05 0.25 0.97 0.85 -R 0.1 0.2 0.7 1.0
  *
@@ -68,9 +73,9 @@ bool parameter_check(Parameters *params) {
     return true;
 }
 
-Parameters* init_parameters(const char* filename, string deviceID) {
+Parameters* init_parameters(const char* filename) {
 
-    Parameters* parameters = new Parameters(filename, deviceID);
+    Parameters* parameters = new Parameters(filename);
     parameters->is_params_checked = parameter_check(parameters);
 
     return parameters;
@@ -88,23 +93,22 @@ int main(int argc, const char *argv[]) {
     mainLogger->info("Start jc people counting and face detector");
     mainLogger->info("Read program arguments");
 
-    if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << "configuration filename" << " deviceId" << std::endl;
+    if (argc < 2) {
+        mainLogger->error("Usage: %v configuration filename", argv[0]);
         return 1;
     }
 
     mainLogger->info("Read parameters from json file and device id from arguments");
-    mainLogger->info("device ID: %v", argv[2]);
-    Parameters* parameters = init_parameters(argv[1], string(argv[2]));
+    Parameters* parameters = init_parameters(argv[1]);
 
     mainLogger->info("License mode: %v", parameters->getLicenseMode());
     mainLogger->info("License: %v", parameters->getlicense());
+    mainLogger->info("unitGUID: %v", parameters->getunitGUID());
     mainLogger->info("DeviceId: %v", parameters->getdeviceId());
 
     if (parameters) {
         if (parameters->is_params_checked)
             run(parameters);
-        delete parameters;
     }
 
     return 0;

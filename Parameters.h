@@ -86,8 +86,7 @@ private:
     bool is_debug_image = false;
 
 public:
-    //Parameters(rapidjson::Document& document, string deviceId);
-    Parameters(const char* filename, string deviceId);
+    Parameters(const char* filename);
     ~Parameters();
 
     void setunitGUID(int unitID) {unitGUID = unitID; }
@@ -143,7 +142,7 @@ public:
     double getpost_interval() { return post_interval; }
     string getinputStream() { return inputStream; }
     string geturl() { return url; }
-    int getLicenseMode() { return is_dev; }
+    bool getLicenseMode() { return is_dev; }
     bool getis_display() { return is_display; }
     int getis_debug_image() { return is_debug_image; }
     vector<float> getroi() { return roi; }

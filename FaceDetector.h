@@ -39,12 +39,16 @@ public:
 private:
 
     void update_parameters(rapidjson::Document &configuration) {
+        if (configuration.HasMember("cs_DetectionScale"))
+            crowdSight->setDetectionScale(float(configuration["cs_DetectionScale"].GetDouble()));
+        if (configuration.HasMember("cs_FaceDetector"))
+            crowdSight->setFaceDetector(configuration["cs_FaceDetector"].GetInt());
         if (configuration.HasMember("cs_acceptance_threshold"))
-            crowdSight->setFaceConfidence(configuration["cs_acceptance_threshold"].GetDouble());
+            crowdSight->setFaceConfidence(float(configuration["cs_acceptance_threshold"].GetDouble()));
         if (configuration.HasMember("cs_min_face_size"))
-            crowdSight->setMinFaceSize(configuration["cs_min_face_size"].GetDouble());
+            crowdSight->setMinFaceSize(configuration["cs_min_face_size"].GetInt());
         if (configuration.HasMember("cs_max_face_size"))
-            crowdSight->setMaxFaceSize(configuration["cs_max_face_size"].GetDouble());
+            crowdSight->setMaxFaceSize(configuration["cs_max_face_size"].GetInt());
         if (configuration.HasMember("cs_use_age"))
             crowdSight->useAge(configuration["cs_use_age"].GetBool());
         if (configuration.HasMember("cs_use_cloth_color"))
@@ -61,9 +65,6 @@ private:
             crowdSight->useMood(configuration["cs_use_mood"].GetBool());
         if (configuration.HasMember("cs_use_fastdetection"))
             crowdSight->useFastDetection(configuration["cs_use_fastdetection"].GetBool());
-
-
-
 
     }
 

@@ -107,6 +107,8 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
             }
         }
     }
+
+    std::cout << "[TEST] " << str << std::endl;
 }
 
 void Detector::InitOpenCV() {
@@ -138,7 +140,8 @@ void Detector::InitOpenCV() {
 
     window_name = "JC Video";
 
-    if (parameters->getis_display() != 0) {
+    if (!parameters->getis_display()) {
+        cv::resizeWindow(window_name, 1280, 800);
         cvNamedWindow(window_name, cv::WINDOW_AUTOSIZE);
     }
 
@@ -152,10 +155,8 @@ void Detector::InitPreProcessor() {
 }
 
 void Detector::InitDetectors() {
-
     people_count_detector = new PeopleCountDetector(*parameters);
     face_detector = new FaceDetector(*parameters);
-
     if (parameters->getLicenseMode()) {
         face_detector->ShowSettings();
     }
@@ -180,7 +181,6 @@ void Detector::init() {
     InitOpenCV();
     InitPreProcessor();
     InitDetectors();
-
     return;
 }
 
@@ -217,15 +217,17 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
                     Scalar::all(255), thickness, 8);
     }
     imshow(window_name, frame);
-    /*static int count = 0;
-    std::string filename = std::to_string(count) + ".png";
+    static int count = 0;
+    std::string filename = std::to_string(frameNo) + ".png";
     cv::imwrite(filename, frame);
-    count++;*/
+    count++;
     waitKey(1);
 }
 
 void Detector::fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi) {
     const vector<float> roi_fd = parameters->getroi();
+    float alpha_mask = 0.05f;
+    unsigned char mask_value = 80;
     if (roi_fd.size() > 0) {
         // Rect(x, y, w, h);
         cv::Size s = frame.size();
@@ -238,8 +240,6 @@ void Detector::fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi) {
     }
     const vector<vector<float>> dontcare_rois = parameters->getdontcare_rois();
     if (dontcare_rois.size() > 0) {
-        uint8_t *roi_pixels = frame_roi.data;
-
         int width = frame_roi.cols;
         int height = frame_roi.rows;
         for (vector<float> a_roi : dontcare_rois) {
@@ -251,9 +251,9 @@ void Detector::fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi) {
             for (int i = upper_left_x; i < bottom_right_x; i++) {
                 for (int j = upper_left_y; j < bottom_right_y; j++) {
                     cv::Vec3b& pixels = frame_roi.at<Vec3b>(j, i);
-                    pixels[0] = 128;
-                    pixels[1] = 128;
-                    pixels[2] = 128;
+                    pixels[0] = std::min(int(alpha_mask * pixels[0] + (1 - alpha_mask) * mask_value + 0.5), 255);
+                    pixels[1] = std::min(int(alpha_mask * pixels[1] + (1 - alpha_mask) * mask_value + 0.5), 255);
+                    pixels[2] = std::min(int(alpha_mask * pixels[2] + (1 - alpha_mask) * mask_value + 0.5), 255);
                 }
             }
 
@@ -276,8 +276,6 @@ void Detector::run() {
     while(true) {
         videoCapture >> frame;
         frameNo++;
-        //if (frameNo < 710)
-          //  continue;
         if (frame.empty()) {
             videoCapture.release();
             break;
