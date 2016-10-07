@@ -55,7 +55,6 @@ for use_fastdetection in cs_use_fastdetection:
 
 program_binary = root + 'build/jc_pilot'
 log_filename = 'output.log'
-count = 0
 with open(log_filename, 'w') as log_file:
     for script in script_list:
         with open(script, 'r') as json_data_file:
@@ -73,7 +72,4 @@ with open(log_filename, 'w') as log_file:
         head, tail = os.path.split(script)
         log_file.write(tail + ' ' + '(%s, %s, %s) ' % \
                        (str(data["cs_use_fastdetection"]), str(data["cs_FaceDetector"]), str(data["cs_acceptance_threshold"])) \
-                       + str((t2 - t1).seconds) + 'sec. ' + str(line) + '\n')
-        count += 1
-        if count == 5:
-            break
+                       + str((t2 - t1).seconds) + 'sec. ' + str(line))
