@@ -45,7 +45,7 @@ void FaceDetector::ShowSettings() {
 
 }
 
-void FaceDetector::DrawResults(cv::Mat frame, Person &person, int frameno) {
+void FaceDetector::DrawResults(cv::Mat frame, Person &person) {
     std::map<long, DetectedPerson>::iterator detIt;
     detIt = detectedPersonMap.find(person.getID());
     std::string yaw = "yaw: ";
@@ -102,9 +102,6 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
         std::map<long, DetectedPerson>::iterator detIt;
         detIt = detectedPersonMap.find(it->getID());
 
-        if (paras.getis_display() != 0)
-            DrawResults(frame, *it, frameNo);
-
         if (detIt != detectedPersonMap.end()) {
             detIt->second.incrementDetectionCount();
             detIt->second.addAge(it->getAge());
@@ -113,6 +110,9 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
             detIt->second.setLastObservedFrame(frameNo);
             detIt->second.setHeadYaw(it->getHeadYaw());
             detIt->second.setPossibilityToSee();
+
+            if (paras.getis_display() != 0)
+                DrawResults(frame, *it);
 
             if (isCloserTo(detIt->second.getGaze(), it->getHeadGaze(), cv::Point(paras.getad_point_x(), paras.getad_point_y())))
                 detIt->second.setGaze(it->getHeadGaze());

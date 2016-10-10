@@ -33,7 +33,7 @@ public:
 
     bool Process(cv::Mat frame, Parameters& paras, int frameNo, bool fileSource);
 
-    void DrawResults(cv::Mat frame, Person &person, int frameno);
+    void DrawResults(cv::Mat frame, Person &person);
     void ShowSettings();
 
 private:

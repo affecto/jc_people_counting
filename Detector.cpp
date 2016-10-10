@@ -77,7 +77,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
             if (count > 0) {
                 jsonStr << " , ";
             }
-            jsonStr << pIt->second.asJSON(frameNo, parameters->getunitGUID(), countedPedestrians_segs[count]);
+            jsonStr << pIt->second.asJSON(pIt->second.getDetectionFrameNo(), parameters->getunitGUID(), countedPedestrians_segs[count]);
             pIt->second.setSent(true);
             count++;
         }
@@ -87,7 +87,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
 
     if (count == 0) {
         DetectedPerson *dummyPerson = createDummyProfile();
-        jsonStr << dummyPerson->asJSON(frameNo, parameters->getunitGUID(), countedPedestrians);
+        jsonStr << dummyPerson->asJSON(-1, parameters->getunitGUID(), countedPedestrians);
     }
 
     jsonStr << "]";
