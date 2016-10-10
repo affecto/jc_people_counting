@@ -29,6 +29,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
     cout << "preparing json string to be sent" << endl;
 
     RestClient::headermap headers;
+    headers["X-Device-ID"] = parameters->deviceId;
 
     std::map<long, DetectedPerson>::iterator pIt;
     pIt = detectedPeopleMap.begin();
