@@ -5,7 +5,7 @@
 #include "LineDetector.h"
 #define DEBUG_MODE 0
 
-LineDetector::LineDetector(string n, double relative_b_x, double relative_b_y,
+LineDetector::LineDetector(double relative_b_x, double relative_b_y,
                            double relative_e_x, double relative_e_y,
                            int frame_width, int frame_height,
                            Mat k, double s_f, int blob_threshold) {
@@ -19,7 +19,6 @@ LineDetector::LineDetector(string n, double relative_b_x, double relative_b_y,
     end = new Point(end_x, end_y);
 
     kernel = k;
-    name = n;
 
     scale_factor = s_f;
     blob_area_threshold = blob_threshold;

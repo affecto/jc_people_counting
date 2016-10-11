@@ -108,7 +108,7 @@ void Detector::sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, in
         }
     }
 
-    std::cout << "[TEST] " << str << std::endl;
+    std::cout << "[TEST] total_f_det: [" << std::to_string(count) << "] " << str << std::endl;
 }
 
 void Detector::InitOpenCV() {
@@ -217,10 +217,10 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
                     Scalar::all(255), thickness, 8);
     }
     imshow(window_name, frame);
-    static int count = 0;
+    /*static int count = 0;
     std::string filename = std::to_string(frameNo) + ".png";
     cv::imwrite(filename, frame);
-    count++;
+    count++;*/
     waitKey(1);
 }
 
@@ -288,13 +288,13 @@ void Detector::run() {
         people_count_detector->line_det1->AddLine(preprocessed_frame);
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
-        const vector<float> roi_fd = parameters->getroi();
+        if ((frameNo % face_detector->getfd_skip_frames()) == 0) {
+            fd_roi_operators(frame, frame_roi);
+            face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
-        fd_roi_operators(frame, frame_roi);
-        face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
-
-        if (parameters->getis_display()) {
-            display(frame, parameters);
+            if (parameters->getis_display()) {
+                display(frame, parameters);
+            }
         }
     }
     people_count_detector->line_det1->DoDetection();
@@ -318,6 +318,10 @@ void Detector::run() {
     }
 
     time_t endTime = time(0);
-    mainLogger->debug("frame rate at frame [%v]: %v", frameNo, frameNo / (endTime - analysisStartTime));
+    if ((endTime - analysisStartTime) > 0)
+        mainLogger->debug("frame rate at frame [%v]: %v", frameNo, frameNo / (endTime - analysisStartTime));
+    else
+        mainLogger->debug("frame rate information cannot be calculated!");
+
 }
 

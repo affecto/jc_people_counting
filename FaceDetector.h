@@ -35,10 +35,14 @@ public:
 
     void DrawResults(cv::Mat frame, Person &person);
     void ShowSettings();
+    int getfd_skip_frames() { return fd_skip_frames; }
 
 private:
-
+    int fd_skip_frames = 1;
+    void setfd_skip_frames(int skip_frames) { fd_skip_frames = skip_frames; }
     void update_parameters(rapidjson::Document &configuration) {
+        if (configuration.HasMember("fd_skip_frames"))
+            setfd_skip_frames(configuration["fd_skip_frames"].GetInt());
         if (configuration.HasMember("cs_DetectionScale"))
             crowdSight->setDetectionScale(float(configuration["cs_DetectionScale"].GetDouble()));
         if (configuration.HasMember("cs_FaceDetector"))

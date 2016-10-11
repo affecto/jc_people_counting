@@ -20,11 +20,10 @@ public:
     Mat kernel;
     vector< vector <Vec3b> > lines;
     int detected_pedestrians;
-    string name;
     double scale_factor;
     int blob_area_threshold;
 
-    LineDetector(string name, double relative_b_x, double relative_b_y,
+    LineDetector(double relative_b_x, double relative_b_y,
     double relative_e_x, double relative_e_y,
     int frame_width, int frame_height,
     Mat kernel, double scale_factor, int blob_area_threshold);

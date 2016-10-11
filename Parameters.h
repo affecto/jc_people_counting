@@ -73,7 +73,7 @@ private:
     int reactObservationDeprecationTime = 5;
 
     // for line detectors
-    int blob_area_threshold = 1500;
+    int blob_area_threshold = 1000;
 
     int scheduled_sleep;
     std::string schedu1ed_sleep_start;

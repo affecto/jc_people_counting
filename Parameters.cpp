@@ -13,22 +13,24 @@ Parameters::Parameters(const char* filename) {
     if (fp != NULL)
         FileReadStream(fp, buffer, sizeof(buffer));
     else {
-        mainLogger->error("cannot open %v", filename);
+        mainLogger->fatal("cannot open %v", filename);
         fclose(fp);
         return;
     }
 
     fclose(fp);
 
-    mainLogger->info("Access values in document %v", filename);
+    mainLogger->info("Read parameters in [%v]", filename);
     if (configuration.ParseInsitu(buffer).HasParseError()) {
-        mainLogger->error("failed to parse configuration file %v (file exists though)", filename);
+        mainLogger->fatal("failed to parse configuration file %v (file exists though)", filename);
         return;
     }
 
     assert(configuration.IsObject());
-
-    mainLogger->info("Finished accessing values in document %v", filename);
+    if (configuration.HasMember("logging_conf")) {
+        el::Configurations conf(configuration["logging_conf"].GetString());
+        el::Loggers::reconfigureLogger("main", conf);
+    }
     if (configuration.HasMember("unitGUID")) unitGUID = configuration["unitGUID"].GetInt();
     if (configuration.HasMember("deviceId")) deviceId = configuration["deviceId"].GetString();
     if (configuration.HasMember("conf_file")) conf_file = configuration["conf_file"].GetString();
@@ -113,6 +115,8 @@ Parameters::Parameters(const char* filename) {
     if (configuration.HasMember("min_face_size")) min_face_size = configuration["min_face_size"].GetInt();
     if (configuration.HasMember("is_debug_image")) is_debug_image = configuration["is_debug_image"].GetBool();
     if (configuration.HasMember("detectionCount")) detectionCount = configuration["detectionCount"].GetInt();
+
+    mainLogger->info("Finished parsing values in document %v", filename);
 
 }
 
