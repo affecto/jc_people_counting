@@ -318,6 +318,7 @@ void Detector::run() {
     }
 
     time_t endTime = time(0);
+    mainLogger->info("processed time: %v sec.", (endTime - analysisStartTime));
     if ((endTime - analysisStartTime) > 0)
         mainLogger->debug("frame rate at frame [%v]: %v", frameNo, frameNo / (endTime - analysisStartTime));
     else
