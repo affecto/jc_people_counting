@@ -17,7 +17,6 @@ public:
     LineDetector* line_det1;
     LineDetector* line_det2;
 
-
     PeopleCountDetector(Parameters& params);
     ~PeopleCountDetector();
 

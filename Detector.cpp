@@ -224,7 +224,7 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
     waitKey(1);
 }
 
-void Detector::fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi) {
+void Detector::fd_roi_operators() {
     const vector<float> roi_fd = parameters->getroi();
     float alpha_mask = 0.05f;
     unsigned char mask_value = 80;
@@ -265,9 +265,6 @@ void Detector::run() {
 
     time_t analysisStartTime = time(0);
 
-    cv::Mat frame;
-    cv::Mat frame_roi;
-
     timeval start;
     gettimeofday(&start, NULL);
 
@@ -289,7 +286,7 @@ void Detector::run() {
         people_count_detector->line_det2->AddLine(preprocessed_frame);
 
         if ((frameNo % face_detector->getfd_skip_frames()) == 0) {
-            fd_roi_operators(frame, frame_roi);
+            fd_roi_operators();
             face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
             if (parameters->getis_display()) {

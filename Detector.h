@@ -42,12 +42,15 @@ public:
     void InitPreProcessor();
     void InitOpenCV();
     void InitDetectors();
-    void fd_roi_operators(cv::Mat& frame, cv::Mat& frame_roi);
+    void fd_roi_operators();
     void run();
     void display(cv::Mat &frame, Parameters *parameters);
 
     void sendJsonData(std::map<long, DetectedPerson> detectedPeopleMap, int countedPedestrians, int frameNo, Parameters *parameters);
 
+private:
+    cv::Mat frame;
+    cv::Mat frame_roi;
 };
 
 
