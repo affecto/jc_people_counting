@@ -1,0 +1,97 @@
+2016-10-11 10:38:51,0 Start jc people counting and face detector
+2016-10-11 10:38:51,0 Read program arguments
+2016-10-11 10:38:51,0 Read parameters from json file and device id from arguments
+2016-10-11 10:38:51,0 Access values in document /home/amin/ClionProjects/jc_people_counting/configurations/conf_local.json
+2016-10-11 10:38:51,0 Finished accessing values in document /home/amin/ClionProjects/jc_people_counting/configurations/conf_local.json
+2016-10-11 10:38:51,0 License mode: 1
+2016-10-11 10:38:51,0 License: f187f8d8b27f424fbab9064c18a7e0e4
+2016-10-11 10:38:51,0 unitGUID: 1
+2016-10-11 10:38:51,0 DeviceId: 1234
+2016-10-11 10:38:51,0 Clip from file: /home/amin/ClionProjects/jc_people_counting/videos/cam2-20160921080253.mp4
+2016-10-11 10:38:52,2 Detector type: 1
+2016-10-11 10:38:52,2 Detection scale: 1
+2016-10-11 10:38:52,2 Face confidence: 0.4
+2016-10-11 10:38:52,2 Face detector: 1
+2016-10-11 10:38:52,2 Min, max Face Size: (30, 0)
+2016-10-11 10:38:52,2 Fast Detection: 1
+2016-10-11 10:38:52,2 Is age used: 1
+2016-10-11 10:38:52,2 Gender used: 1
+2016-10-11 10:38:52,2 Head pose used: 1
+2016-10-11 10:38:52,2 Tracking used: 1
+2016-10-11 10:38:52,2 Clothing color used: 0
+2016-10-11 10:38:52,2 emotion used: 0
+11/10 FUNCTION Started detections on unit: 1
+2016-10-11 10:39:08,8 [frame 1344] First sight of the person: 1, gender: 0.650864, gaze: (6, -12), position: [0.526563, 0.40625], headYaw (degree): -0.0755419, possi. to see: Likely
+2016-10-11 10:39:08,5 [frame 1392] First sight of the person: 2, gender: 0.992371, gaze: (20, -111), position: [0.473437, 0.316667], headYaw (degree): -0.0367525, possi. to see: Very likely
+2016-10-11 10:39:09,2 [frame 1408] Observed person: 2, gender: 0.992521, attention: 856, gaze: (50, -101), position: [0.459375, 0.3], headYaw (degree): -2.80994, possi. to see: Very likely
+2016-10-11 10:39:09,1 [frame 1424] Observed person: 2, gender: 0.947993, attention: 1098, gaze: (60, -128), position: [0.471094, 0.284375], headYaw (degree): -3.30862, possi. to see: Likely
+2016-10-11 10:39:09,1 [frame 1440] Observed person: 2, gender: 0.935724, attention: 1324, gaze: (34, -172), position: [0.484375, 0.26875], headYaw (degree): -2.88581, possi. to see: Very likely
+2016-10-11 10:39:09,1 [frame 1456] Observed person: 2, gender: 0.937635, attention: 1515, gaze: (17, -227), position: [0.471094, 0.257292], headYaw (degree): -2.25891, possi. to see: Very likely
+2016-10-11 10:39:13,6 Number of pedestrians: 4
+11/10 FUNCTION frame rate at frame [1510]: 71
+2016-10-11 10:39:13,6 preparing json string to be sent
+2016-10-11 10:39:13,6 json string to be sent prepared:
+11/10 FUNCTION [{"frameID":1392,"unitGUID":1,"ID":2,"firstObserved":55,"lastObserved":58,"age":35.75,"gender":0.9534685015678406,"gazex":17,"gazey":-227,"attentionSpan":1515,"possibilityToSee":"Very likely","headYaw":-2.5151054859161379,"number_of_total_pedestrians":4}]
+2016-10-11 10:51:29,3 Finished parsing values in document /home/amin/ClionProjects/jc_people_counting/configurations/conf_local.json
+2016-10-11 10:51:29,3 License mode: 1
+2016-10-11 10:51:29,3 License: f187f8d8b27f424fbab9064c18a7e0e4
+2016-10-11 10:51:29,3 unitGUID: 1
+2016-10-11 10:51:29,3 DeviceId: 1234
+2016-10-11 10:51:29,3 Clip from file: /home/amin/ClionProjects/jc_people_counting/videos/cam2-20160921080253.mp4
+2016-10-11 10:51:31,5 Detector type: 1
+2016-10-11 10:51:31,5 Detection scale: 1
+2016-10-11 10:51:31,5 Face confidence: 0.4
+2016-10-11 10:51:31,5 Face detector: 1
+2016-10-11 10:51:31,5 Min, max Face Size: (30, 0)
+2016-10-11 10:51:31,5 Fast Detection: 1
+2016-10-11 10:51:31,5 Is age used: 1
+2016-10-11 10:51:31,5 Gender used: 1
+2016-10-11 10:51:31,5 Head pose used: 1
+2016-10-11 10:51:31,5 Tracking used: 1
+2016-10-11 10:51:31,5 Clothing color used: 0
+2016-10-11 10:51:31,5 emotion used: 0
+2016-10-11 10:51:31,5 Start jc people counting and face detector
+11/10 FUNCTION Started detections on unit: 1
+2016-10-11 10:51:47,0 [frame 1344] First sight of the person: 1, gender: 0.650864, gaze: (6, -12), position: [0.526563, 0.40625], headYaw (degree): -0.0755419, possi. to see: Likely
+2016-10-11 10:51:48,2 [frame 1392] First sight of the person: 2, gender: 0.992371, gaze: (20, -111), position: [0.473437, 0.316667], headYaw (degree): -0.0367525, possi. to see: Very likely
+2016-10-11 10:51:48,3 [frame 1408] Observed person: 2, gender: 0.992521, attention: 831, gaze: (50, -101), position: [0.459375, 0.3], headYaw (degree): -2.80994, possi. to see: Very likely
+2016-10-11 10:51:49,1 [frame 1424] Observed person: 2, gender: 0.947993, attention: 1082, gaze: (60, -128), position: [0.471094, 0.284375], headYaw (degree): -3.30862, possi. to see: Likely
+2016-10-11 10:51:49,7 [frame 1440] Observed person: 2, gender: 0.935724, attention: 1325, gaze: (34, -172), position: [0.484375, 0.26875], headYaw (degree): -2.88581, possi. to see: Very likely
+2016-10-11 10:51:49,1 [frame 1456] Observed person: 2, gender: 0.937635, attention: 1510, gaze: (17, -227), position: [0.471094, 0.257292], headYaw (degree): -2.25891, possi. to see: Very likely
+2016-10-11 10:51:53,0 Number of pedestrians: 4
+11/10 FUNCTION frame rate at frame [1510]: 68
+2016-10-11 10:51:53,0 preparing json string to be sent
+2016-10-11 10:51:53,0 json string to be sent prepared:
+11/10 FUNCTION [{"frameID":1392,"unitGUID":1,"ID":2,"firstObserved":55,"lastObserved":58,"age":35.75,"gender":0.9534685015678406,"gazex":17,"gazey":-227,"attentionSpan":1510,"possibilityToSee":"Very likely","headYaw":-2.5151054859161379,"number_of_total_pedestrians":4}]
+2016-10-11 10:57:58,6 Finished parsing values in document /home/amin/ClionProjects/jc_people_counting/configurations/conf_local.json
+2016-10-11 10:57:58,6 License mode: 1
+2016-10-11 10:57:58,6 License: f187f8d8b27f424fbab9064c18a7e0e4
+2016-10-11 10:57:58,6 unitGUID: 1
+2016-10-11 10:57:58,6 DeviceId: 1234
+2016-10-11 10:57:58,6 Clip from file: /home/amin/ClionProjects/jc_people_counting/videos/cam2-20160921080253.mp4
+2016-10-11 10:58:01,3 Detector type: 1
+2016-10-11 10:58:01,3 Detection scale: 1
+2016-10-11 10:58:01,3 Face confidence: 0.4
+2016-10-11 10:58:01,3 Face detector: 1
+2016-10-11 10:58:01,3 Min, max Face Size: (30, 0)
+2016-10-11 10:58:01,3 Fast Detection: 1
+2016-10-11 10:58:01,3 Is age used: 1
+2016-10-11 10:58:01,3 Gender used: 1
+2016-10-11 10:58:01,3 Head pose used: 1
+2016-10-11 10:58:01,3 Tracking used: 1
+2016-10-11 10:58:01,3 Clothing color used: 0
+2016-10-11 10:58:01,3 emotion used: 0
+2016-10-11 10:58:01,3 Start jc people counting and face detector
+11/10 FUNCTION Started detections on unit: 1
+2016-10-11 10:58:16,3 [frame 1344] First sight of the person: 1, gender: 0.650864, gaze: (6, -12), position: [0.526563, 0.40625], headYaw (degree): -0.0755419, possi. to see: Likely
+2016-10-11 10:58:16,9 [frame 1392] First sight of the person: 2, gender: 0.992371, gaze: (20, -111), position: [0.473437, 0.316667], headYaw (degree): -0.0367525, possi. to see: Very likely
+2016-10-11 10:58:17,3 [frame 1408] Observed person: 2, gender: 0.992521, attention: 832, gaze: (50, -101), position: [0.459375, 0.3], headYaw (degree): -2.80994, possi. to see: Very likely
+2016-10-11 10:58:17,5 [frame 1424] Observed person: 2, gender: 0.947993, attention: 1067, gaze: (60, -128), position: [0.471094, 0.284375], headYaw (degree): -3.30862, possi. to see: Likely
+2016-10-11 10:58:17,6 [frame 1440] Observed person: 2, gender: 0.935724, attention: 1266, gaze: (34, -172), position: [0.484375, 0.26875], headYaw (degree): -2.88581, possi. to see: Very likely
+2016-10-11 10:58:17,0 [frame 1456] Observed person: 2, gender: 0.937635, attention: 1439, gaze: (17, -227), position: [0.471094, 0.257292], headYaw (degree): -2.25891, possi. to see: Very likely
+2016-10-11 10:58:21,1 Number of pedestrians: 4
+2016-10-11 10:58:21,1 processed time: 20
+11/10 FUNCTION frame rate at frame [1510]: 75
+2016-10-11 10:58:21,1 preparing json string to be sent
+2016-10-11 10:58:21,1 json string to be sent prepared:
+11/10 FUNCTION [{"frameID":1392,"unitGUID":1,"ID":2,"firstObserved":55,"lastObserved":58,"age":35.75,"gender":0.9534685015678406,"gazex":17,"gazey":-227,"attentionSpan":1439,"possibilityToSee":"Very likely","headYaw":-2.5151054859161379,"number_of_total_pedestrians":4}]
