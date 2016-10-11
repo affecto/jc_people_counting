@@ -33,6 +33,7 @@ void run(Parameters *params) {
     detector.init();
 
     if (detector.ok()) {
+        mainLogger->info("Start jc people counting and face detector");
         detector.run();
     } else {
         mainLogger->error("CameraSensor failed to init or API used has failed to authenticate.");
@@ -86,19 +87,15 @@ int DetectedPerson :: idCounter = 0;
 int main(int argc, const char *argv[]) {
 
     START_EASYLOGGINGPP(argc, argv);
-
     mainLogger = el::Loggers::getLogger("main");
     //el::Helpers::setCrashHandler(myCrashHandler);     // here to define your own crash handler
 
-    mainLogger->info("Start jc people counting and face detector");
     mainLogger->info("Read program arguments");
-
     if (argc < 2) {
         mainLogger->error("Usage: %v configuration filename", argv[0]);
         return 1;
     }
 
-    mainLogger->info("Read parameters from json file and device id from arguments");
     Parameters* parameters = init_parameters(argv[1]);
 
     mainLogger->info("License mode: %v", parameters->getLicenseMode());
