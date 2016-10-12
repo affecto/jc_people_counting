@@ -6,7 +6,10 @@ and face detector with 3rd party library.
 
 # Script to run the program
 * $ ./jc_pilot [configuration .json file name]
-* e.g. '''./jc_pilot conf_local.json'''
+* e.g. 
+'''
+./jc_pilot conf_local.json
+'''
 
 # Change made to system configuration
 * The way to configure the program has been changed in this release. Now it is done 
@@ -21,8 +24,12 @@ in the "fatal" level.
 # New features added
 * Support one performing face detection in pre-defined ROI region.
 If one would like to define the ROI region where face detectors are performed as the
-following example, one should add ''' "roi" : [0.0, 0.0, 1.0, 1.0] ''' into .json \
-configuration file.
+following example, one should add 
+''' 
+"roi" : [0.0, 0.0, 1.0, 1.0] 
+''' 
+into .json configuration file.
+
 ![ROI for face detectors](doc_images/fd_roi.png)
 
 
