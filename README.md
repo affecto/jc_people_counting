@@ -46,5 +46,5 @@ one should add the following into .json system configuration file
 "dontcare_rois" : [[0.3, 0.01, 0.4, 0.4], [0.6, 0.6, 0.7, 0.9]]
 ```
 Please notice that these are the normalized coordinates (from 0 to 1) with respect
-to **active area's width and height** and **the origin is the top left corner of 
-the active area (rather than that of the whole image!)**.
+to **active area's width and height** and the origin is the top left corner of 
+the active area marked with blue dot and (0,0) in the figure above.
