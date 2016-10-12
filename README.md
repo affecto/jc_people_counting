@@ -5,11 +5,10 @@ This repository contains C++ 11 implementation on algorithms such as people coun
 and face detector with 3rd party library. 
 
 # Script to run the program
-* $ ./jc_pilot [configuration .json file name]
-* e.g. 
-'''
-./jc_pilot conf_local.json
-'''
+* $ ./jc_pilot [configuration .json file name], e.g.
+``` 
+./jc_pilot conf_local.json 
+```
 
 # Change made to system configuration
 * The way to configure the program has been changed in this release. Now it is done 
@@ -24,12 +23,28 @@ in the "fatal" level.
 # New features added
 * Support one performing face detection in pre-defined ROI region.
 If one would like to define the ROI region where face detectors are performed as the
-following example, one should add 
-''' 
-"roi" : [0.0, 0.0, 1.0, 1.0] 
-''' 
-into .json configuration file.
+following example, 
 
 ![ROI for face detectors](doc_images/fd_roi.png)
 
+one should add the following line into .json system configuration file.
 
+``` 
+"roi" : [0.1, 0.15, 0.9, 0.75] 
+``` 
+Please notice that these are the normalized coordinates (from 0 to 1) with respect 
+to the image's width and height.
+
+* Support one excluding the areas **within the active area for face detector**. 
+If one would like to define the deactivated region in which face detectors would not
+take any effect as the following example does, 
+
+![ROI for face detectors](doc_images/fd_dcroi.png)
+
+one should add the following into .json system configuration file 
+```
+"dontcare_rois" : [[0.3, 0.01, 0.4, 0.4], [0.6, 0.6, 0.7, 0.9]]
+```
+Please notice that these are the normalized coordinates (from 0 to 1) with respect
+to **active area's width and height** and **the origin is the top left corner of 
+the active area (rather than that of the whole image!)**.
