@@ -48,3 +48,11 @@ one should add the following into [.json system configuration file] (configurati
 Please notice that these are the normalized coordinates (from 0 to 1) with respect
 to **active area's width and height** and the origin is the top left corner of 
 the active area marked with blue dot and (0,0) in the figure above.
+
+* Suport one defining where to place the virtual lines for counting pedestrians
+passing by. If one would like to place two virtual lines as it does as follows
+![virtual lines for people counting](doc_images/roi_vlines.png)
+one should add the following into [.json system configuration file] (configurations/conf_local.json)
+```
+"roi_vlines" : [0.2, 0.2, 0.75, 1.0]
+```
