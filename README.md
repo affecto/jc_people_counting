@@ -13,7 +13,7 @@ and face detector with 3rd party library.
 To avoid expanding the exhausted list of the configurable parameters here,
 one can refer to the following places in the source codes to check those 
 configurable parameters that could be defined in [.json system configuration file] (configurations/conf_local.json)
-* [Parameters::Parameters(const char* filename)] (Parameter.cpp)
+* [Parameters::Parameters(const char* filename)] (Parameters.cpp)
 * [update_parameters(rapidjson::Document &configuration)] (FaceDetector.h)
 
 # Change made to system configuration
