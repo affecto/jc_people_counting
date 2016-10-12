@@ -9,9 +9,15 @@ and face detector with 3rd party library.
 ``` 
 ./jc_pilot conf_local.json 
 ```
+# Changes of Configurable Parameters or The Newly Added
+To avoid expanding the exhausted list of the configurable parameters here,
+one can refer to the following places in the source codes to check those 
+configurable parameters that could be defined in [.json system configuration file] (configurations/conf_local.json)
+* [Parameters::Parameters(const char* filename)] (Parameter.cpp)
+* [update_parameters(rapidjson::Document &configuration)] (FaceDetector.h)
 
 # Change made to system configuration
-* The way to configure the program has been changed in this release. Now it is done 
+The way to configure the program has been changed in this release. Now it is done 
 by parsing .json file that one can check out [the example for system configuration] (configurations/conf_local.json)
 
 # Change made to verbosity configuration
@@ -21,7 +27,7 @@ in the "fatal" level.
 * Check [the example for verbosity configuration] (configurations/logger.conf)
 
 # New features added
-* Support one performing face detection in pre-defined ROI region.
+1. Support one performing face detection in pre-defined ROI region.
 If one would like to define the ROI region where face detectors are performed as the
 following example, 
 
@@ -35,7 +41,7 @@ one should add the following line into [.json system configuration file] ((confi
 Please notice that these are the normalized coordinates (from 0 to 1) with respect 
 to the image's width and height.
 
-* Support one excluding the areas **within the active area for face detector**. 
+2. Support one excluding the areas **within the active area for face detector**. 
 If one would like to define the deactivated region in which face detectors would not
 take any effect as the following example does, 
 
@@ -49,7 +55,7 @@ Please notice that these are the normalized coordinates (from 0 to 1) with respe
 to **active area's width and height** and the origin is the top left corner of 
 the active area marked with blue dot and (0,0) in the figure above.
 
-* Suport one defining where to place the virtual lines for counting pedestrians
+3. Suport one defining where to place the virtual lines for counting pedestrians
 passing by. If one would like to place two virtual lines as it does as follows
 
 ![virtual lines for people counting](doc_images/roi_vlines.png)
