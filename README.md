@@ -32,7 +32,7 @@ in the "fatal" level.
 If one would like to define the ROI region where face detectors are performed as the
 following example, 
 
-    ![ROI for face detectors](https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/fd_roi.png)
+    ![ROI for face detectors](https://github.com/affecto/jc_people_counting/blob/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/fd_roi.png)
 
     one should add the following line into [.json system configuration file] (https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/configurations/conf_local.json).
 
@@ -46,7 +46,7 @@ following example,
 If one would like to define the deactivated region in which face detectors would not
 take any effect as the following example does, 
 
-    ![ROI for face detectors](https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/fd_dcroi.png)
+    ![ROI for face detectors](https://github.com/affecto/jc_people_counting/blob/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/fd_dcroi.png)
 
     one should add the following into [.json system configuration file] (https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/configurations/conf_local.json) 
     ```
@@ -60,7 +60,7 @@ take any effect as the following example does,
 3. Suport one defining where to place the virtual lines for counting pedestrians
 passing by. If one would like to place two virtual lines as it does as follows
 
-    ![virtual lines for people counting](https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/roi_vlines.png)
+    ![virtual lines for people counting](https://github.com/affecto/jc_people_counting/blob/e8dcdea021491a73049e5d4dbd7f5666857e0d74/doc_images/roi_vlines.png)
 
     one should add the following into [.json system configuration file] (https://github.com/affecto/jc_people_counting/tree/e8dcdea021491a73049e5d4dbd7f5666857e0d74/configurations/conf_local.json)
     ```
