@@ -27,7 +27,7 @@ following example,
 
 ![ROI for face detectors](doc_images/fd_roi.png)
 
-one should add the following line into .json system configuration file.
+one should add the following line into [.json system configuration file] ((configurations/conf_local.json)).
 
 ``` 
 "roi" : [0.1, 0.15, 0.9, 0.75] 
@@ -41,7 +41,7 @@ take any effect as the following example does,
 
 ![ROI for face detectors](doc_images/fd_dcroi.png)
 
-one should add the following into .json system configuration file 
+one should add the following into [.json system configuration file] (configurations/conf_local.json) 
 ```
 "dontcare_rois" : [[0.3, 0.01, 0.4, 0.4], [0.6, 0.6, 0.7, 0.9]]
 ```
