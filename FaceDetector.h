@@ -36,11 +36,17 @@ public:
     void DrawResults(cv::Mat frame, Person &person);
     void ShowSettings();
     int getfd_skip_frames() { return fd_skip_frames; }
+    float getfd_scale_factor() { return fd_scale_factor; }
 
 private:
     int fd_skip_frames = 1;
+    float fd_scale_factor = 1.0f;
     void setfd_skip_frames(int skip_frames) { fd_skip_frames = skip_frames; }
+    void setfd_scale_factor(float scale_factor) { fd_scale_factor = scale_factor; }
+
     void update_parameters(rapidjson::Document &configuration) {
+        if (configuration.HasMember("fd_scale_factor"))
+            setfd_scale_factor(float(configuration["fd_scale_factor"].GetDouble()));
         if (configuration.HasMember("fd_skip_frames"))
             setfd_skip_frames(configuration["fd_skip_frames"].GetInt());
         if (configuration.HasMember("cs_DetectionScale"))

@@ -45,7 +45,7 @@ private:
 
     bool is_display = false;
 
-    double scale_factor = 0.5;
+    double ld_scale_factor = 0.5;
     bool use_grayscale = false;
 
     //bool use_roi;
@@ -79,9 +79,6 @@ private:
     std::string schedu1ed_sleep_start;
     std::string scheduled_sleep_stop;
 
-    // crowdsight api configurations;
-    int min_face_size = 30;
-
     // debugging functions
     bool is_debug_image = false;
 
@@ -90,7 +87,6 @@ public:
     ~Parameters();
 
     void setunitGUID(int unitID) {unitGUID = unitID; }
-    void setMinFaceSize(int f_s) {min_face_size = f_s; }
     void setConfFile(string f) { conf_file = f; }
     void setScheduledSleep(int s_sleep) { scheduled_sleep = s_sleep; }
     void setScheduledSleepStart(string start_time) { schedu1ed_sleep_start = start_time; }
@@ -118,14 +114,14 @@ public:
             roi_vlines.push_back(coord);
     }
     void setdetectionCount(int count) { detectionCount = count; }
-    void setScaleFactor(double scale_f) { scale_factor = scale_f; }
+    void setld_scale_factor(double scale_f) { ld_scale_factor = scale_f; }
     void setUseGrayScale(bool grayscale_on) { use_grayscale = grayscale_on; }
     void setDebugImage(bool d_i) { is_debug_image = d_i; }
     void setblob_area_threshold(int blob_thrs) { blob_area_threshold = blob_thrs; }
+    int setstartSecond(int start) { startSecond = start;}
 
     rapidjson::Document& getconfiguration() { return configuration; }
     int getunitGUID() { return unitGUID; }
-    int getmin_face_size() { return min_face_size; }
     string getconf_file() { return conf_file; }
     int getscheduled_sleep() { return scheduled_sleep; }
     string getschedu1ed_sleep_start() { return schedu1ed_sleep_start; }
@@ -148,7 +144,7 @@ public:
     vector<float> getroi() { return roi; }
     vector<float> getroi_vlines() { return roi_vlines; }
     vector<vector<float>> getdontcare_rois() { return dontcare_rois; }
-    double getscale_factor() { return scale_factor; }
+    double getld_scale_factor() { return ld_scale_factor; }
     bool getuse_grayscale() { return use_grayscale; }
     int getblob_area_threshold() { return blob_area_threshold; }
     int getad_point_x() { return ad_point_x; }

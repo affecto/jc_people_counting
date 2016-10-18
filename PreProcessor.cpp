@@ -21,8 +21,8 @@ PreProcessor::PreProcessor(int grayscale, double s_width, double s_height) {
 
 PreProcessor::PreProcessor(Parameters& paras) {
 
-    scale_width = paras.getscale_factor() * paras.getframe_width();
-    scale_height = paras.getscale_factor() * paras.getframe_height();
+    scale_width = paras.getld_scale_factor() * paras.getframe_width();
+    scale_height = paras.getld_scale_factor() * paras.getframe_height();
     convert_to_grayscale = paras.getuse_grayscale();
     //use_roi = paras.use_roi;
     //roi = new ROI(paras.roi_center_x, paras.roi_center_y, paras.roi_width, paras.roi_height, paras.frame_width, paras.frame_height);

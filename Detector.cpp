@@ -3,8 +3,6 @@
 //
 
 #include "Detector.h"
-#include <sys/time.h>
-#include "include/rapidjson/document.h"
 #include <restclient-cpp/restclient.h>
 extern el::Logger* mainLogger;
 
@@ -216,6 +214,15 @@ void Detector::display(cv::Mat &frame, Parameters *parameters) {
                     fontFace, fontScale,
                     Scalar::all(255), thickness, 8);
     }
+    int cs_min_face_size = face_detector->crowdSight->getMinFaceSize();
+    std::string text("minimal face size: " + std::to_string(cs_min_face_size));
+    //int true_min_face_size = int(cs_min_face_size / face_detector->getfd_scale_factor() + 0.5);
+    int true_min_face_size = int(cs_min_face_size);
+    cv::Point pt1(s.width - true_min_face_size - 1, s.height - true_min_face_size - 1);
+    cv::Point pt2(s.width - 1, s.height - 1);
+    cv::rectangle(frame, Rect(pt1, pt2), vcolor::KCOLOR_GREEN_1, 2);
+    pt1.x = s.width - 200;
+    cv::putText(frame, text, pt1, fontFace, fontScale, Scalar::all(255), thickness, 4);
     imshow(window_name, frame);
     /*static int count = 0;
     std::string filename = std::to_string(frameNo) + ".png";
@@ -238,6 +245,9 @@ void Detector::fd_roi_operators() {
     } else {
         frame.copyTo(frame_roi);
     }
+    if (!comparefloats(1.0, face_detector->getfd_scale_factor()))
+        cv::resize(frame_roi, frame_roi, cv::Size(), face_detector->getfd_scale_factor(), face_detector->getfd_scale_factor(), INTER_CUBIC);
+
     const vector<vector<float>> dontcare_rois = parameters->getdontcare_rois();
     if (dontcare_rois.size() > 0) {
         int width = frame_roi.cols;
@@ -290,9 +300,11 @@ void Detector::run() {
             face_detector->Process(frame_roi, *parameters, frameNo, fileSource);
 
             if (parameters->getis_display()) {
-                display(frame, parameters);
+                display(frame_roi, parameters);
             }
         }
+
+
     }
     people_count_detector->line_det1->DoDetection();
     people_count_detector->line_det2->DoDetection();

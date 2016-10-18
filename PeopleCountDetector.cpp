@@ -21,10 +21,10 @@ PeopleCountDetector::PeopleCountDetector(Parameters& params) {
     // params.roi_vlines[0:4]: upper left x, upper left y, bottom right x, bottom right y, e.g. 0.1 0.5 0.9 1.0
     // then it creates two virtual lines, one connects (0.1, 0.5) and (0.1, 1.0), another connects (0.9, 0.5) and (0.9, 1.0)
     line_det1 = new LineDetector(roi_vlines[0], roi_vlines[1], roi_vlines[0], roi_vlines[3],
-                                 params.getframe_width(), params.getframe_height(), element, params.getscale_factor(),
+                                 params.getframe_width(), params.getframe_height(), element, params.getld_scale_factor(),
                                  params.getblob_area_threshold());
     line_det2 = new LineDetector(roi_vlines[2], roi_vlines[1], roi_vlines[2], roi_vlines[3],
-                                 params.getframe_width(), params.getframe_height(), element, params.getscale_factor(),
+                                 params.getframe_width(), params.getframe_height(), element, params.getld_scale_factor(),
                                  params.getblob_area_threshold());
 
 }

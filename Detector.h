@@ -11,6 +11,7 @@
 #include "PreProcessor.h"
 #include "PeopleCountDetector.h"
 #include "FaceDetector.h"
+#include "util.h"
 
 using namespace std;
 

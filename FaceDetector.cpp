@@ -89,7 +89,7 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
         frameTimestamp = paras.getstartSecond() + videoTime;
     }
 
-    if (!crowdSight->process(frame)) {
+    if (!crowdSight->process(frame, false)) {
         std::cerr << "Failed to process frame: " << crowdSight->getErrorDescription() << std::endl;
         return false;
     }
@@ -128,9 +128,9 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
                     detectedPersonMap.erase(detIt);
                 }
             }
-            mainLogger->info("[frame %v] Observed person: %v, gender: %v, attention: %v, gaze: (%v, %v), position: [%v, %v], "
+            mainLogger->info("[frame %v] Observed person: %v, age: %v, gender: %v, attention: %v, gaze: (%v, %v), position: [%v, %v], "
                                      "headYaw (degree): %v, possi. to see: %v",
-                             frameNo, it->getID(), it->getGender(), it->getAttentionSpan(), it->getHeadGaze().x, it->getHeadGaze().y,
+                             frameNo, it->getID(), it->getAge(), it->getGender(), it->getAttentionSpan(), it->getHeadGaze().x, it->getHeadGaze().y,
                              float(it->getRightEye().x) / frame.cols, float(it->getRightEye().y) / frame.rows, detIt->second.getHeadYaw(), detIt->second.getPossibilityToSee());
 
         } else if (it->getID() != 0) {
@@ -146,9 +146,9 @@ bool FaceDetector::Process(cv::Mat frame, Parameters &paras, int frameNo, bool f
 
             detectedPersonMap[newPerson.getCrowdSightID()] = newPerson;
 
-            mainLogger->info("[frame %v] First sight of the person: %v, gender: %v, gaze: (%v, %v), position: [%v, %v], "
+            mainLogger->info("[frame %v] First sight of the person: %v, age: %v, gender: %v, gaze: (%v, %v), position: [%v, %v], "
                                      "headYaw (degree): %v, possi. to see: %v",
-                             frameNo, it->getID(), it->getGender(), it->getHeadGaze().x, it->getHeadGaze().y,
+                             frameNo, it->getID(), it->getAge(), it->getGender(), it->getHeadGaze().x, it->getHeadGaze().y,
                              float(it->getRightEye().x) / frame.cols, float(it->getRightEye().y) / frame.rows, it->getHeadYaw(), newPerson.getPossibilityToSee());
         }
 

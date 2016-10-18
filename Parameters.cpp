@@ -50,7 +50,7 @@ Parameters::Parameters(const char* filename) {
 
     if (configuration.HasMember("is_display")) is_display = configuration["is_display"].GetBool();
 
-    if (configuration.HasMember("scale_factor")) scale_factor = configuration["scale_factor"].GetDouble();
+    if (configuration.HasMember("ld_scale_factor")) ld_scale_factor = configuration["ld_scale_factor"].GetDouble();
     if (configuration.HasMember("use_grayscale")) use_grayscale = configuration["use_grayscale"].GetBool();
 
     if (configuration.HasMember("roi")) {
@@ -112,7 +112,6 @@ Parameters::Parameters(const char* filename) {
     if (configuration.HasMember("schedu1ed_sleep_start")) schedu1ed_sleep_start = configuration["schedu1ed_sleep_start"].GetString();
     if (configuration.HasMember("scheduled_sleep_stop")) scheduled_sleep_stop = configuration["scheduled_sleep_stop"].GetString();
 
-    if (configuration.HasMember("min_face_size")) min_face_size = configuration["min_face_size"].GetInt();
     if (configuration.HasMember("is_debug_image")) is_debug_image = configuration["is_debug_image"].GetBool();
     if (configuration.HasMember("detectionCount")) detectionCount = configuration["detectionCount"].GetInt();
 
